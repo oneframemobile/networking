@@ -1,4 +1,4 @@
-import 'package:networking/serializable.dart';
+import 'package:networking/networking/serializable.dart';
 
 class RegisterRequest implements Serializable<RegisterRequest> {
   final String email;

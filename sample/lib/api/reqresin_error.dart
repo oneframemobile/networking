@@ -1,7 +1,9 @@
-import 'package:networking/serializable.dart';
+import 'package:networking/networking.dart';
 
-class ReqResInError implements Serializable<ReqResInError> {
-  final String error;
+class ReqResInError implements SerializableObject<ReqResInError> {
+  String error;
+
+  ReqResInError();
 
   ReqResInError.fromJsonMap(Map<String, dynamic> map) : error = map["error"];
 

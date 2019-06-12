@@ -1,4 +1,6 @@
-import 'package:networking/serializable.dart';
+
+
+import 'package:networking/networking.dart';
 
 class RegisterResponse implements Serializable<RegisterResponse> {
   final int id;

@@ -1,14 +1,15 @@
-import 'package:networking/serializable.dart';
+import 'package:networking/networking.dart';
+import 'package:sample/api/podo/base_response.dart';
 
-class RegisterResponse implements Serializable<RegisterResponse> {
+class RegisterResponse with BaseResponse implements SerializableObject<RegisterResponse> {
   int id;
   String token;
 
   RegisterResponse();
 
-  RegisterResponse.fromJsonMap(Map<String, dynamic> map)
-      : id = map["id"],
-        token = map["token"];
+  RegisterResponse.fromJsonMap(Map<String, dynamic> json)
+      : id = json["id"],
+        token = json["token"];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

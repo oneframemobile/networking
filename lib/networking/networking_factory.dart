@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:networking/network_config.dart';
-import 'package:networking/network_learning.dart';
-import 'package:networking/network_manager.dart';
+import 'network_config.dart';
+import 'network_learning.dart';
+import 'network_manager.dart';
 
 class NetworkingFactory {
   static NetworkManager create({

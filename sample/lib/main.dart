@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:networking/network_listener.dart';
-import 'package:networking/network_manager.dart';
-import 'package:networking/networking_factory.dart';
+import 'package:networking/networking.dart';
+import 'package:sample/api/podo/post_response.dart';
 import 'package:sample/api/podo/register_request.dart';
 import 'package:sample/api/podo/register_response.dart';
 import 'package:sample/api/reqresin_error.dart';
@@ -34,29 +33,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
+      _counter++;
+
       RegisterRequest request = new RegisterRequest(
         "eve.holt@reqres.in",
         "pistol",
       );
 
       NetworkManager manager = NetworkingFactory.create();
-      manager = NetworkingFactory.create();
       manager
-          .post<RegisterRequest, RegisterResponse>(
-            url: "https://reqres.in/api/register",
-            body: request,
-            instance: new RegisterResponse(),
-            listener: new NetworkListener<RegisterResponse, ReqResInError>()
-              ..onSuccess((result) {
-                print("success");
-              })
-              ..onError((error) {
-                print("fail");
-              }),
-          )
+          .post<RegisterRequest, RegisterResponse, ReqResInError>(
+              url: "https://reqres.in/api/register",
+              body: request,
+              type: new RegisterResponse(),
+              listener: new NetworkListener()
+                ..onSuccess((dynamic result) {
+                  print("success");
+                })
+                ..onError((dynamic error) {
+                  print("fail");
+                }))
           .fetch();
-      // This call to setState tells the Flutter framework that something has
-      _counter++;
+
+      manager
+          .get<PostResponse, ReqResInError>(
+              url: "https://jsonplaceholder.typicode.com/posts",
+              type: new PostResponse(),
+              error: new ReqResInError(),
+              asList: true,
+              listener: new NetworkListener()
+                ..onSuccess((dynamic result) {
+                  print("hello");
+                })
+                ..onError((dynamic error) {
+                  print("world");
+                }))
+          .fetch();
     });
   }
 

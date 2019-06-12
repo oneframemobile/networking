@@ -1,4 +1,4 @@
-import 'package:networking/header.dart';
+import 'header.dart';
 
 class NetworkConfig {
   List<Header> _headers = [];
