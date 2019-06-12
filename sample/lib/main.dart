@@ -40,6 +40,22 @@ class _MyHomePageState extends State<MyHomePage> {
         "pistol",
       );
 
+      NetworkConfig config = new NetworkConfig();
+      config.setBaseUrl("www.google.com");
+      config
+          .addHeader(
+            new Header("hello", "wold"),
+          )
+          .addHeader(
+            new Header("its a new", "world"),
+          );
+
+      config.addHeaders([
+        Header("CompanyId", "1"),
+        Header("UserId", "2"),
+      ]);
+
+      config.addHeaderWithParameters("Nice", "Easy").addHeaderWithParameters("John", "Doe");
       NetworkManager manager = NetworkingFactory.create();
       manager
           .post<RegisterRequest, RegisterResponse, ReqResInError>(
