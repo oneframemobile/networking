@@ -9,6 +9,5 @@ export 'networking/network_learning.dart';
 export 'networking/network_listener.dart';
 export 'networking/network_manager.dart';
 export 'networking/networking_factory.dart';
-export 'networking/serializable.dart';
 export 'networking/serializable_object.dart';
 export 'networking/serializable_list.dart';

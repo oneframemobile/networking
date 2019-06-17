@@ -13,8 +13,10 @@ import 'serializable_list.dart';
 import 'serializable_object.dart';
 
 class GenericRequestObject<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable> {
-  List<Header> _headers;
+  Set<Header> _headers;
+  ContentType _contentType;
   MethodType _methodType;
+  Duration _timeout;
   Uri _uri;
   NetworkListener<ResponseType, Serializable> _listener;
   NetworkLearning _learning;
@@ -26,13 +28,14 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   bool _asList;
 
   GenericRequestObject(
-      this._methodType,
-      this._learning,
-      this._client,
-      this._config, [
-        this._body,
-      ]) {
-    _headers = [];
+    this._methodType,
+    this._learning,
+    this._client,
+    this._config, [
+    this._body,
+  ]) {
+    _headers = new Set();
+    _timeout = Duration(seconds: 60);
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> url(String url) {
@@ -56,6 +59,16 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
     return this;
   }
 
+  GenericRequestObject<RequestType, ResponseType, ErrorType> contentType(ContentType contentType) {
+    _contentType = contentType;
+    return this;
+  }
+
+  GenericRequestObject<RequestType, ResponseType, ErrorType> timeout(Duration timeout) {
+    _timeout = timeout;
+    return this;
+  }
+
   GenericRequestObject<RequestType, ResponseType, ErrorType> listener(NetworkListener<ResponseType, Serializable> listener) {
     _listener = listener;
     return this;
@@ -68,6 +81,16 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> asList(bool asList) {
     _asList = asList;
+    return this;
+  }
+
+  GenericRequestObject<RequestType, ResponseType, ErrorType> query(String key, String value) {
+    _uri.queryParameters[key] = value;
+    return this;
+  }
+
+  GenericRequestObject<RequestType, ResponseType, ErrorType> path(String path) {
+    _uri.pathSegments.add(path);
     return this;
   }
 
@@ -93,15 +116,15 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       var request = await _request();
 
       if (_config != null) {
-        _config.headers.forEach(
-              (header) => request.headers.add(header.key, header.value),
-        );
+        _headers.addAll(_config.headers);
       }
+
+      _headers.forEach((header) => request.headers.add(header.key, header.value));
 
       if (_methodType == MethodType.POST) {
         request.headers.add(
           HttpHeaders.contentTypeHeader,
-          ContentType.json.toString(),
+          _contentType == null ? ContentType.json.toString() : _contentType.toString(),
         );
 
         if (_body != null) {
@@ -118,6 +141,8 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       }
 
       var response = await request.close();
+      response.timeout(_config != null ? _config.timeout : _timeout);
+
       var buffer = new StringBuffer();
       await for (var contents in response.transform(Utf8Decoder())) {
         buffer.write(contents);
@@ -167,6 +192,11 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
       error.description = exception.message;
       error.type = NetworkErrorTypes.NETWORK_ERROR;
+      _listener.error(error as dynamic);
+    } on TimeoutException catch (exception) {
+      ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
+      error.description = exception.message;
+      error.type = NetworkErrorTypes.TIMEOUT_ERROR;
       _listener.error(error as dynamic);
     }
   }
