@@ -1,8 +1,8 @@
 import 'header.dart';
 
 class NetworkConfig {
-  List<Header> _headers = [];
-  int _timeout = 60000;
+  Set<Header> _headers = new Set();
+  Duration _timeout = new Duration(seconds: 60);
   String _baseUrl;
 
   NetworkConfig addHeaders(Iterable<Header> iterable) {
@@ -21,7 +21,7 @@ class NetworkConfig {
     return this;
   }
 
-  NetworkConfig setTimeout(int timeout) {
+  NetworkConfig setTimeout(Duration timeout) {
     _timeout = timeout;
     return this;
   }
@@ -31,11 +31,11 @@ class NetworkConfig {
     return this;
   }
 
-  int get timeout {
+  Duration get timeout {
     return _timeout;
   }
 
-  List<Header> get headers {
+  Set<Header> get headers {
     return _headers;
   }
 
