@@ -1,14 +1,16 @@
-
-
 import 'package:networking/networking.dart';
 
-class RegisterResponse implements Serializable<RegisterResponse> {
-  final int id;
-  final String token;
+import 'base_response.dart';
 
-  RegisterResponse.fromJsonMap(Map<String, dynamic> map)
-      : id = map["id"],
-        token = map["token"];
+class RegisterResponse with BaseResponse implements SerializableObject<RegisterResponse> {
+  int id;
+  String token;
+
+  RegisterResponse();
+
+  RegisterResponse.fromJsonMap(Map<String, dynamic> json)
+      : id = json["id"],
+        token = json["token"];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

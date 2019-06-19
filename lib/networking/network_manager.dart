@@ -20,6 +20,7 @@ class NetworkManager {
     NetworkListener<ResponseType, ErrorType> listener,
     ContentType contentType,
     Iterable<Header> headers,
+    Duration timeout,
     bool asList = false,
   }) {
     return new GenericRequestObject<Null, ResponseType, ErrorType>(MethodType.GET, learning, client, config)
@@ -28,6 +29,7 @@ class NetworkManager {
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
+        .timeout(timeout)
         .asList(asList);
   }
 
@@ -39,6 +41,7 @@ class NetworkManager {
     NetworkListener<ResponseType, ErrorType> listener,
     ContentType contentType,
     Iterable<Header> headers,
+    Duration timeout,
     bool isList = false,
   }) {
     return new GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.POST, learning, client, config, body)
@@ -47,6 +50,7 @@ class NetworkManager {
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
+        .timeout(timeout)
         .asList(isList);
   }
 
@@ -58,6 +62,7 @@ class NetworkManager {
     NetworkListener<ResponseType, ErrorType> listener,
     ContentType contentType,
     Iterable<Header> headers,
+    Duration timeout,
     bool isList = false,
   }) {
     return new GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.PUT, learning, client, config, body)
@@ -66,6 +71,7 @@ class NetworkManager {
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
+        .timeout(timeout)
         .asList(isList);
   }
 }

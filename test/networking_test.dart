@@ -1,26 +1,50 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:networking/networking/network_manager.dart';
-import 'package:networking/networking/networking_factory.dart';
-
+import 'package:networking/networking.dart';
+import 'api/podo/no_response.dart';
 import 'api/podo/register_request.dart';
+import 'api/podo/register_response.dart';
+import 'api/podo/reqresin_error.dart';
 
 void main() {
   NetworkManager _manager;
+  test('post method', () async {
+    RegisterRequest request = new RegisterRequest(
+      "eve.holt@reqres.in",
+      "pistol",
+    );
 
-  setUp(() {
     _manager = NetworkingFactory.create();
+    await _manager
+        .post<RegisterRequest, RegisterResponse, ReqResInError>(
+            url: "https://reqres.in/api",
+            body: request,
+            type: new RegisterResponse(),
+            listener: new NetworkListener()
+              ..onSuccess((dynamic result) {
+                print("success");
+              })
+              ..onError((dynamic error) {
+                print("fail");
+              }))
+        .path("register")
+        .query("hello", "world")
+        .fetch();
   });
 
-  test('post method', () {
-    RegisterRequest request = new RegisterRequest("hello", "world");
-
+  test('timeout method', () async {
     _manager = NetworkingFactory.create();
-    _manager
-        .post(
-          url: "https://reqres.in/api/register",
-          body: request,
-          listener: null,
-        )
+    await _manager
+        .get<NoResponse, NoResponse>(
+            url: "https://httpstat.us/200?sleep=5000",
+            type: new NoResponse(),
+            timeout: new Duration(),
+            listener: new NetworkListener()
+              ..onSuccess((dynamic result) {
+                print("success");
+              })
+              ..onError((dynamic error) {
+                print("fail");
+              }))
         .fetch();
   });
 }
