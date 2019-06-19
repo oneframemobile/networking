@@ -1,7 +1,7 @@
 import 'package:networking/networking.dart';
 import 'package:sample/api/podo/base_response.dart';
 
-class PostResponse with BaseResponse implements SerializableList<Post>, SerializableObject<Post> {
+class PostResponse extends BaseResponse implements SerializableList<Post>, SerializableObject<Post> {
   @override
   List<Post> list;
 

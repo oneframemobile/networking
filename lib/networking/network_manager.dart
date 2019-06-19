@@ -16,7 +16,6 @@ class NetworkManager {
   GenericRequestObject<Null, ResponseType, ErrorType> get<ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     ResponseType type,
-    ErrorType error,
     NetworkListener<ResponseType, ErrorType> listener,
     ContentType contentType,
     Iterable<Header> headers,
@@ -37,7 +36,6 @@ class NetworkManager {
     String url,
     dynamic body,
     ResponseType type,
-    ErrorType error,
     NetworkListener<ResponseType, ErrorType> listener,
     ContentType contentType,
     Iterable<Header> headers,
@@ -58,7 +56,6 @@ class NetworkManager {
     String url,
     dynamic body,
     ResponseType type,
-    ErrorType error,
     NetworkListener<ResponseType, ErrorType> listener,
     ContentType contentType,
     Iterable<Header> headers,

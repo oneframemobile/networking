@@ -27,7 +27,8 @@ void main() {
                 print("fail");
               }))
         .path("register")
-        .query("hello", "world")
+        .query("userId", "10")
+        .addHeader(new Header("My", "Header"))
         .fetch();
   });
 

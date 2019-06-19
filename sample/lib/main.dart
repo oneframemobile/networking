@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:networking/networking.dart';
+import 'package:sample/api/podo/my_learning.dart';
 import 'package:sample/api/podo/post_response.dart';
 import 'package:sample/api/podo/register_request.dart';
 import 'package:sample/api/podo/register_response.dart';
@@ -40,42 +41,26 @@ class _MyHomePageState extends State<MyHomePage> {
         "pistol",
       );
 
-      NetworkConfig config = new NetworkConfig();
-      config.setBaseUrl("www.google.com");
-      config
-          .addHeader(
-            new Header("hello", "wold"),
-          )
-          .addHeader(
-            new Header("its a new", "world"),
-          );
-
-      config.addHeaders([
-        Header("CompanyId", "1"),
-        Header("UserId", "2"),
-      ]);
-
-      config.addHeaderWithParameters("Nice", "Easy").addHeaderWithParameters("John", "Doe");
-      NetworkManager manager = NetworkingFactory.create();
-      manager
-          .post<RegisterRequest, RegisterResponse, ReqResInError>(
-              url: "https://reqres.in/api/register",
-              body: request,
-              type: new RegisterResponse(),
-              listener: new NetworkListener()
-                ..onSuccess((dynamic result) {
-                  print("success");
-                })
-                ..onError((dynamic error) {
-                  print("fail");
-                }))
-          .fetch();
+      MyLearning learning = new MyLearning();
+      NetworkManager manager = NetworkingFactory.create(learning: learning);
+//      manager
+//          .post<RegisterRequest, RegisterResponse, ReqResInError>(
+//              url: "https://reqres.in/api/register",
+//              body: request,
+//              type: new RegisterResponse(),
+//              listener: new NetworkListener<RegisterResponse, ReqResInError>()
+//                ..onSuccess((result) {
+//                  print("success");
+//                })
+//                ..onError((error) {
+//                  print("fail");
+//                }))
+//          .fetch();
 
       manager
           .get<PostResponse, ReqResInError>(
               url: "https://jsonplaceholder.typicode.com/posts",
               type: new PostResponse(),
-              error: new ReqResInError(),
               asList: true,
               listener: new NetworkListener()
                 ..onSuccess((dynamic result) {

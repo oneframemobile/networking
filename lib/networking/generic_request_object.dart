@@ -12,19 +12,18 @@ import 'serializable.dart';
 import 'serializable_list.dart';
 import 'serializable_object.dart';
 
-class GenericRequestObject<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable> {
+class GenericRequestObject<RequestType extends Serializable, ResponseType extends Serializable, ErrorType> {
   Set<Header> _headers;
   ContentType _contentType;
   MethodType _methodType;
   Duration _timeout;
   Uri _uri;
-  NetworkListener<ResponseType, Serializable> _listener;
   NetworkLearning _learning;
   HttpClient _client;
   NetworkConfig _config;
-  Serializable<RequestType> _body;
+  NetworkListener<ResponseType, ErrorType> _listener;
+  RequestType _body;
   ResponseType _type;
-  Serializable<ErrorType> _error;
   bool _asList;
 
   GenericRequestObject(
@@ -73,7 +72,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> listener(NetworkListener<ResponseType, Serializable> listener) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> listener(NetworkListener<ResponseType, ErrorType> listener) {
     _listener = listener;
     return this;
   }
@@ -175,21 +174,10 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
           _listener.result(model);
         }
       } else {
-        ErrorModel error;
-        if (_error is SerializableObject) {
-          var map = json.decode(buffer.toString());
-
-          error = new ErrorModel<ErrorType>();
-          error.data = (_error as SerializableObject).fromJson(map);
-        } else if (_error is SerializableList) {
-          Iterable iterable = json.decode(buffer.toString());
-
-          error = new ErrorModel<List<ErrorType>>();
-          error.data = (_type as SerializableList).fromJsonList(iterable);
-        }
-
+        ErrorModel<ErrorType> error = new ErrorModel();
         error.description = response.reasonPhrase;
-        error.errorCode = response.statusCode;
+        error.statusCode = response.statusCode;
+        error.raw = buffer.toString();
         _listener.error(error);
       }
     } on SocketException catch (exception) {
