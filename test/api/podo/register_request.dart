@@ -1,8 +1,8 @@
-import 'package:networking/networking/serializable.dart';
+import 'package:networking/networking.dart';
 
-class RegisterRequest implements Serializable<RegisterRequest> {
-  final String email;
-  final String password;
+class RegisterRequest implements SerializableObject<RegisterRequest> {
+  String email;
+  String password;
 
   RegisterRequest(this.email, this.password);
 
@@ -18,7 +18,7 @@ class RegisterRequest implements Serializable<RegisterRequest> {
   }
 
   @override
-  RegisterRequest fromJson(Map<String, dynamic> json) {
-    return RegisterRequest.fromJsonMap(json);
+  RegisterRequest fromJson(Map<String, dynamic> map) {
+    return RegisterRequest.fromJsonMap(map);
   }
 }

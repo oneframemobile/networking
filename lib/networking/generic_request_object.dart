@@ -39,17 +39,21 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> url(String url) {
-    _uri = Uri.parse(url);
+    _uri = Uri.parse(_config != null ? _config.baseUrl + url : url);
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeaders(Iterable<Header> iterable) {
-    _headers.addAll(iterable);
+  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeaders(Iterable<Header> headers) {
+    if (headers != null) {
+      _headers.addAll(headers);
+    }
     return this;
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> addHeader(Header header) {
-    _headers.add(header);
+    if (header != null) {
+      _headers.add(header);
+    }
     return this;
   }
 
@@ -85,12 +89,12 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> query(String key, String value) {
-    _uri.queryParameters[key] = value;
+    _uri = Uri.parse(_uri.toString() + "?$key=$value");
     return this;
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> path(String path) {
-    _uri.pathSegments.add(path);
+    _uri = Uri.parse(_uri.toString() + "/$path");
     return this;
   }
 
@@ -111,7 +115,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
     throw new Exception("Unknown method type");
   }
 
-  void fetch() async {
+  Future<void> fetch() async {
     try {
       var request = await _request();
 
