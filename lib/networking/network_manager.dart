@@ -13,10 +13,10 @@ class NetworkManager {
 
   NetworkManager({this.client, this.learning, this.config});
 
-  GenericRequestObject<Null, ResponseType, ErrorType> get<ResponseType extends Serializable, ErrorType extends Serializable>({
+  GenericRequestObject<Null, ResponseType, ErrorType> get<ResponseType extends Serializable, ErrorType>({
     String url,
     ResponseType type,
-    NetworkListener<ResponseType, ErrorType> listener,
+    NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
     Duration timeout,
@@ -32,11 +32,11 @@ class NetworkManager {
         .asList(asList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> post<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> post<RequestType extends Serializable, ResponseType extends Serializable, ErrorType>({
     String url,
     dynamic body,
     ResponseType type,
-    NetworkListener<ResponseType, ErrorType> listener,
+    NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
     Duration timeout,
@@ -52,11 +52,11 @@ class NetworkManager {
         .asList(isList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> put<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> put<RequestType extends Serializable, ResponseType extends Serializable, ErrorType>({
     String url,
     dynamic body,
     ResponseType type,
-    NetworkListener<ResponseType, ErrorType> listener,
+    NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
     Duration timeout,

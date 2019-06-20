@@ -45,16 +45,16 @@ class _MyHomePageState extends State<MyHomePage> {
       NetworkManager manager = NetworkingFactory.create(learning: learning);
       manager
           .post<RegisterRequest, RegisterResponse, ReqResInError>(
-          url: "https://reqres.in/api/register",
-          body: request,
-          type: new RegisterResponse(),
-          listener: new NetworkListener<RegisterResponse, ReqResInError>()
-            ..onSuccess((result) {
-              print("success");
-            })
-            ..onError((error) {
-              print("fail");
-            }))
+              url: "https://reqres.in/api/register",
+              body: request,
+              type: new RegisterResponse(),
+              listener: new NetworkListener()
+                ..onSuccess((result) {
+                  print("success");
+                })
+                ..onError((error) {
+                  print("fail");
+                }))
           .fetch();
 
       manager
@@ -63,10 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
               type: new PostResponse(),
               asList: true,
               listener: new NetworkListener()
-                ..onSuccess((dynamic result) {
+                ..onSuccess((result) {
                   print("hello");
                 })
-                ..onError((dynamic error) {
+                ..onError((error) {
                   print("world");
                 }))
           .fetch();

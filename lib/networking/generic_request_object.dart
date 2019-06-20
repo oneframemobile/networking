@@ -21,7 +21,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   NetworkLearning _learning;
   HttpClient _client;
   NetworkConfig _config;
-  NetworkListener<ResponseType, ErrorType> _listener;
+  NetworkListener _listener;
   RequestType _body;
   ResponseType _type;
   bool _asList;
@@ -74,7 +74,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> listener(NetworkListener<ResponseType, ErrorType> listener) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> listener(NetworkListener listener) {
     _listener = listener;
     return this;
   }
