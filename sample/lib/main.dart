@@ -43,19 +43,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
       MyLearning learning = new MyLearning();
       NetworkManager manager = NetworkingFactory.create(learning: learning);
-//      manager
-//          .post<RegisterRequest, RegisterResponse, ReqResInError>(
-//              url: "https://reqres.in/api/register",
-//              body: request,
-//              type: new RegisterResponse(),
-//              listener: new NetworkListener<RegisterResponse, ReqResInError>()
-//                ..onSuccess((result) {
-//                  print("success");
-//                })
-//                ..onError((error) {
-//                  print("fail");
-//                }))
-//          .fetch();
+      manager
+          .post<RegisterRequest, RegisterResponse, ReqResInError>(
+          url: "https://reqres.in/api/register",
+          body: request,
+          type: new RegisterResponse(),
+          listener: new NetworkListener<RegisterResponse, ReqResInError>()
+            ..onSuccess((result) {
+              print("success");
+            })
+            ..onError((error) {
+              print("fail");
+            }))
+          .fetch();
 
       manager
           .get<PostResponse, ReqResInError>(

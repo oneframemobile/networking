@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'request_id.dart';
 import 'header.dart';
 import 'model/error_model.dart';
 import 'model/result_model.dart';
@@ -25,6 +25,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   RequestType _body;
   ResponseType _type;
   bool _asList;
+  RequestId _id;
 
   GenericRequestObject(
     this._methodType,
@@ -35,6 +36,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   ]) {
     _headers = new Set();
     _timeout = Duration(seconds: 60);
+    _id = new RequestId();
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> url(String url) {
@@ -192,6 +194,12 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       _listener.error(error as dynamic);
     }
   }
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is GenericRequestObject && runtimeType == other.runtimeType && _id == other._id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }
 
 enum MethodType {
