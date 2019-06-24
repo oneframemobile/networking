@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
       MyLearning learning = new MyLearning();
+      NetworkingFactory.init();
       NetworkManager manager = NetworkingFactory.create(learning: learning);
       manager
           .post<RegisterRequest, RegisterResponse, ReqResInError>(
@@ -55,21 +56,26 @@ class _MyHomePageState extends State<MyHomePage> {
                 ..onError((error) {
                   print("fail");
                 }))
-          .fetch();
+          .fetch()
+            ..then((asd) {
+              print("aa");
+            }).catchError((error) {
+              print("bb");
+            });
 
-      manager
-          .get<PostResponse, ReqResInError>(
-              url: "https://jsonplaceholder.typicode.com/posts",
-              type: new PostResponse(),
-              asList: true,
-              listener: new NetworkListener()
-                ..onSuccess((result) {
-                  print("hello");
-                })
-                ..onError((error) {
-                  print("world");
-                }))
-          .fetch();
+//      manager
+//          .get<PostResponse, ReqResInError>(
+//              url: "https://jsonplaceholder.typicode.com/posts",
+//              type: new PostResponse(),
+//              asList: true,
+//              listener: new NetworkListener()
+//                ..onSuccess((result) {
+//                  print("hello");
+//                })
+//                ..onError((error) {
+//                  print("world");
+//                }))
+//          .enqueue();
     });
   }
 

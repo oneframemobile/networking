@@ -2,23 +2,25 @@ import 'package:networking/networking.dart';
 
 class MyLearning extends NetworkLearning {
   @override
-  void checkCustomError(NetworkListener listener, ErrorModel error) {
+  checkCustomError(NetworkListener listener, ErrorModel error) {
     // TODO: implement checkCustomError
   }
 
   @override
-  void checkSuccess(NetworkListener listener, ResultModel result) {
+  checkSuccess(NetworkListener listener, ResultModel result) {
     try {
       var data = result.data as dynamic;
       if (data.errorMessage == null) {
-        sendSuccess(listener, result as dynamic);
+        return sendSuccess(listener, result as dynamic);
       } else {
         ErrorModel<String> error = new ErrorModel();
         error.description = "Hata!";
-        sendError(listener, error);
+        return sendError(listener, error);
       }
     } on NoSuchMethodError catch (e) {
-      print(e.toString());
+      ErrorModel<StackTrace> error = new ErrorModel();
+      error.data = e.stackTrace;
+      return sendError(listener, error);
     }
   }
 }

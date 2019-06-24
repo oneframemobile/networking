@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:networking/networking/network_queue.dart';
+
 import 'request_id.dart';
 import 'header.dart';
 import 'model/error_model.dart';
@@ -116,7 +118,9 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
     throw new Exception("Unknown method type");
   }
 
-  Future<void> fetch() async {
+  Future<dynamic> fetch() async {
+    Future future = Future.value(dynamic);
+
     try {
       var request = await _request();
 
@@ -171,9 +175,10 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         }
 
         if (_learning != null) {
-          _learning.checkSuccess(_listener, model);
+          return _learning.checkSuccess(_listener, model);
         } else {
           _listener.result(model);
+          return Future.value(model);
         }
       } else {
         ErrorModel<ErrorType> error = new ErrorModel();
@@ -181,6 +186,8 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         error.statusCode = response.statusCode;
         error.raw = buffer.toString();
         _listener.error(error);
+
+        return Future.error(error);
       }
     } on SocketException catch (exception) {
       ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
@@ -193,6 +200,12 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       error.type = NetworkErrorTypes.TIMEOUT_ERROR;
       _listener.error(error as dynamic);
     }
+
+    return future;
+  }
+
+  void enqueue() {
+    NetworkQueue.instance.add(this);
   }
 
   @override
