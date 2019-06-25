@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'generic_request_object.dart';
 
 class NetworkQueue {

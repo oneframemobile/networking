@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:networking/networking/network_queue.dart';
 
+import 'network_queue.dart';
 import 'request_id.dart';
 import 'header.dart';
 import 'model/error_model.dart';
@@ -27,7 +27,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   RequestType _body;
   ResponseType _type;
   bool _asList;
-  RequestId _id;
+  final RequestId id = new RequestId();
 
   GenericRequestObject(
     this._methodType,
@@ -38,7 +38,6 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   ]) {
     _headers = new Set();
     _timeout = Duration(seconds: 60);
-    _id = new RequestId();
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> url(String url) {
@@ -209,10 +208,10 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   }
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is GenericRequestObject && runtimeType == other.runtimeType && _id == other._id;
+  bool operator ==(Object other) => identical(this, other) || other is GenericRequestObject && runtimeType == other.runtimeType && id == other.id;
 
   @override
-  int get hashCode => _id.hashCode;
+  int get hashCode => id.hashCode;
 }
 
 enum MethodType {
