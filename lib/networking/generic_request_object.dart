@@ -176,7 +176,9 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         if (_learning != null) {
           return _learning.checkSuccess(_listener, model);
         } else {
-          _listener.result(model);
+          if (_listener != null) {
+            _listener.result(model);
+          }
           return Future.value(model);
         }
       } else {
@@ -184,7 +186,10 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         error.description = response.reasonPhrase;
         error.statusCode = response.statusCode;
         error.raw = buffer.toString();
-        _listener.error(error);
+
+        if (_listener != null) {
+          _listener.error(error);
+        }
 
         return Future.error(error);
       }
@@ -192,12 +197,20 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
       error.description = exception.message;
       error.type = NetworkErrorTypes.NETWORK_ERROR;
-      _listener.error(error as dynamic);
+      if (_listener != null) {
+        _listener.error(error as dynamic);
+      }
+
+      return Future.error(error);
     } on TimeoutException catch (exception) {
       ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
       error.description = exception.message;
       error.type = NetworkErrorTypes.TIMEOUT_ERROR;
-      _listener.error(error as dynamic);
+      if (_listener != null) {
+        _listener.error(error as dynamic);
+      }
+
+      return Future.error(error);
     }
 
     return future;
