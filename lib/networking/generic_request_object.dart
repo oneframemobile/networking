@@ -14,7 +14,8 @@ import 'serializable.dart';
 import 'serializable_list.dart';
 import 'serializable_object.dart';
 
-class GenericRequestObject<RequestType extends Serializable, ResponseType extends Serializable, ErrorType> {
+class GenericRequestObject<RequestType extends Serializable,
+    ResponseType extends Serializable, ErrorType> {
   Set<Header> _headers;
   ContentType _contentType;
   MethodType _methodType;
@@ -45,52 +46,61 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeaders(Iterable<Header> headers) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeaders(
+      Iterable<Header> headers) {
     if (headers != null) {
       _headers.addAll(headers);
     }
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeader(Header header) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeader(
+      Header header) {
     if (header != null) {
       _headers.add(header);
     }
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeaderWithParameters(String key, String value) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType>
+      addHeaderWithParameters(String key, String value) {
     var header = new Header(key, value);
     _headers.add(header);
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> contentType(ContentType contentType) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> contentType(
+      ContentType contentType) {
     _contentType = contentType;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> timeout(Duration timeout) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> timeout(
+      Duration timeout) {
     _timeout = timeout;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> listener(NetworkListener listener) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> listener(
+      NetworkListener listener) {
     _listener = listener;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> type(ResponseType type) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> type(
+      ResponseType type) {
     _type = type;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> asList(bool asList) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> asList(
+      bool asList) {
     _asList = asList;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> query(String key, String value) {
+  GenericRequestObject<RequestType, ResponseType, ErrorType> query(
+      String key, String value) {
     _uri = Uri.parse(_uri.toString() + "?$key=$value");
     return this;
   }
@@ -127,12 +137,15 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         _headers.addAll(_config.headers);
       }
 
-      _headers.forEach((header) => request.headers.add(header.key, header.value));
+      _headers
+          .forEach((header) => request.headers.add(header.key, header.value));
 
       if (_methodType == MethodType.POST) {
         request.headers.add(
           HttpHeaders.contentTypeHeader,
-          _contentType == null ? ContentType.json.toString() : _contentType.toString(),
+          _contentType == null
+              ? ContentType.json.toString()
+              : _contentType.toString(),
         );
 
         if (_body != null) {
@@ -160,6 +173,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         ResultModel<ResponseType> model = new ResultModel();
         model.result = buffer.toString();
         model.url = _uri.toString();
+        model.cookies = response.cookies;
         if (!_asList) {
           var map = json.decode(buffer.toString());
           var serializable = (_type as SerializableObject);
@@ -221,7 +235,11 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   }
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is GenericRequestObject && runtimeType == other.runtimeType && id == other.id;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GenericRequestObject &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
