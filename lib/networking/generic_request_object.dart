@@ -189,12 +189,12 @@ class GenericRequestObject<RequestType extends Serializable,
         buffer.write(contents);
       }
 
+
       if (response.statusCode >= 200 && response.statusCode < 300) {
         ResultModel<ResponseType> model = new ResultModel();
         model.result = buffer.toString();
         model.url = _uri.toString();
         if (response.cookies.length > 0) model.cookies = response.cookies;
-
         if (!_asList) {
           var map = json.decode(buffer.toString());
           var serializable = (_type as SerializableObject);
