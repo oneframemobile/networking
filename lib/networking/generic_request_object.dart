@@ -27,6 +27,8 @@ class GenericRequestObject<RequestType extends Serializable,
   NetworkListener _listener;
   RequestType _body;
   ResponseType _type;
+  List<Cookie> _cookies;
+
   bool _asList;
   final RequestId id = new RequestId();
 
@@ -58,6 +60,22 @@ class GenericRequestObject<RequestType extends Serializable,
       Header header) {
     if (header != null) {
       _headers.add(header);
+    }
+    return this;
+  }
+
+  GenericRequestObject<RequestType, ResponseType, ErrorType> addCookies(
+      Iterable<Cookie> cookies) {
+    if (cookies != null) {
+      _cookies.addAll(cookies);
+    }
+    return this;
+  }
+
+  GenericRequestObject<RequestType, ResponseType, ErrorType> addCookie(
+      Cookie cookie) {
+    if (cookie != null) {
+      _cookies.add(cookie);
     }
     return this;
   }
@@ -137,6 +155,8 @@ class GenericRequestObject<RequestType extends Serializable,
         _headers.addAll(_config.headers);
       }
 
+      _cookies.forEach((cookie) => request.cookies.add(cookie));
+
       _headers
           .forEach((header) => request.headers.add(header.key, header.value));
 
@@ -173,7 +193,8 @@ class GenericRequestObject<RequestType extends Serializable,
         ResultModel<ResponseType> model = new ResultModel();
         model.result = buffer.toString();
         model.url = _uri.toString();
-        model.cookies = response.cookies;
+        if (response.cookies.length > 0) model.cookies = response.cookies;
+
         if (!_asList) {
           var map = json.decode(buffer.toString());
           var serializable = (_type as SerializableObject);
