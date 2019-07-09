@@ -196,7 +196,12 @@ class GenericRequestObject<RequestType extends Serializable,
         ResultModel<ResponseType> model = new ResultModel();
         model.result = buffer.toString();
         model.url = _uri.toString();
-        if (response.cookies.isNotEmpty) model.cookies = response.cookies;
+        try {
+          if (response.cookies.isNotEmpty) model.cookies = response.cookies;
+        } catch (e) {
+          // dart lang error?
+            print(e);
+        }
         if (!_asList) {
           var map = json.decode(buffer.toString());
           var serializable = (_type as SerializableObject);
