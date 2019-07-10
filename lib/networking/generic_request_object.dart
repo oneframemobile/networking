@@ -163,7 +163,7 @@ class GenericRequestObject<RequestType extends Serializable,
       _headers
           .forEach((header) => request.headers.add(header.key, header.value));
 
-      if (_methodType == MethodType.POST) {
+      if (_methodType == MethodType.POST || _methodType == MethodType.PUT) {
         request.headers.add(
           HttpHeaders.contentTypeHeader,
           _contentType == null
