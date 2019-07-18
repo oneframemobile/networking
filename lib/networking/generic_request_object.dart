@@ -81,6 +81,16 @@ class GenericRequestObject<RequestType extends Serializable,
     return this;
   }
 
+  GenericRequestObject<RequestType, ResponseType, ErrorType> addQuery(
+      String key, String value) {
+    if (_uri.toString().contains("?")) {
+      _uri = Uri.parse(_uri.toString() + "&$key=$value");
+    } else {
+      _uri = Uri.parse(_uri.toString() + "?$key=$value");
+    }
+    return this;
+  }
+
   GenericRequestObject<RequestType, ResponseType, ErrorType>
       addHeaderWithParameters(String key, String value) {
     var header = new Header(key, value);
@@ -200,7 +210,7 @@ class GenericRequestObject<RequestType extends Serializable,
           if (response.cookies.isNotEmpty) model.cookies = response.cookies;
         } catch (e) {
           // dart lang error?
-            print(e);
+          print(e);
         }
         if (!_asList) {
           var map = json.decode(buffer.toString());
