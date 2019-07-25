@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:networking/networking/no_payload.dart';
+
 import 'network_queue.dart';
 import 'request_id.dart';
 import 'header.dart';
@@ -211,6 +213,11 @@ class GenericRequestObject<RequestType extends Serializable,
         } catch (e) {
           // dart lang error?
           print(e);
+        }
+        if (buffer.isEmpty) {
+          var map = new Map();
+          model.data = NoPayload().fromJson(map);
+          model.json = map;
         }
         if (!_asList) {
           var map = json.decode(buffer.toString());
