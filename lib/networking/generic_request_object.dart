@@ -159,11 +159,8 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   Future<dynamic> fetch() async {
-    Future future = Future.value(dynamic);
-
     try {
       var request = await _request();
-
       if (_config != null) {
         _headers.addAll(_config.headers);
       }
@@ -208,18 +205,18 @@ class GenericRequestObject<RequestType extends Serializable,
         ResultModel<ResponseType> model = new ResultModel();
         model.result = buffer.toString();
         model.url = _uri.toString();
+
         try {
           if (response.cookies.isNotEmpty) model.cookies = response.cookies;
         } catch (e) {
-          // dart lang error?
+          // dart lang error
           print(e);
         }
-        if (buffer.isEmpty) {
-          var map = new Map();
+        if (buffer.isEmpty || _methodType == MethodType.DELETE) {
+          var map = new Map<String, dynamic>();
           model.data = NoPayload().fromJson(map);
           model.json = map;
-        }
-        if (!_asList) {
+        } else if (!_asList) {
           var map = json.decode(buffer.toString());
           var serializable = (_type as SerializableObject);
           model.data = serializable.fromJson(map);
@@ -271,8 +268,6 @@ class GenericRequestObject<RequestType extends Serializable,
 
       return Future.error(error);
     }
-
-    return future;
   }
 
   void enqueue() {

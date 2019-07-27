@@ -13,7 +13,8 @@ class NetworkManager {
 
   NetworkManager({this.client, this.learning, this.config});
 
-  GenericRequestObject<Null, ResponseType, ErrorType> get<ResponseType extends Serializable, ErrorType>({
+  GenericRequestObject<Null, ResponseType, ErrorType>
+      get<ResponseType extends Serializable, ErrorType>({
     String url,
     ResponseType type,
     NetworkListener listener,
@@ -22,7 +23,8 @@ class NetworkManager {
     Duration timeout,
     bool asList = false,
   }) {
-    return new GenericRequestObject<Null, ResponseType, ErrorType>(MethodType.GET, learning, client, config)
+    return new GenericRequestObject<Null, ResponseType, ErrorType>(
+            MethodType.GET, learning, client, config)
         .url(url)
         .type(type)
         .listener(listener)
@@ -32,7 +34,10 @@ class NetworkManager {
         .asList(asList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> post<RequestType extends Serializable, ResponseType extends Serializable, ErrorType>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> post<
+      RequestType extends Serializable,
+      ResponseType extends Serializable,
+      ErrorType>({
     String url,
     dynamic body,
     ResponseType type,
@@ -42,7 +47,8 @@ class NetworkManager {
     Duration timeout,
     bool isList = false,
   }) {
-    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.POST, learning, client, config, body)
+    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(
+            MethodType.POST, learning, client, config, body)
         .url(url)
         .type(type)
         .listener(listener)
@@ -52,7 +58,10 @@ class NetworkManager {
         .asList(isList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> put<RequestType extends Serializable, ResponseType extends Serializable, ErrorType>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> put<
+      RequestType extends Serializable,
+      ResponseType extends Serializable,
+      ErrorType>({
     String url,
     dynamic body,
     ResponseType type,
@@ -62,7 +71,8 @@ class NetworkManager {
     Duration timeout,
     bool isList = false,
   }) {
-    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.PUT, learning, client, config, body)
+    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(
+            MethodType.PUT, learning, client, config, body)
         .url(url)
         .type(type)
         .listener(listener)
@@ -70,5 +80,20 @@ class NetworkManager {
         .addHeaders(headers)
         .timeout(timeout)
         .asList(isList);
+  }
+
+  GenericRequestObject<RequestType, NoPayload, ErrorType> delete<
+      RequestType extends Serializable,
+      NoPayload extends Serializable,
+      ErrorType>({
+    String url,
+    Iterable<Header> headers,
+    Duration timeout,
+  }) {
+    return new GenericRequestObject<RequestType, NoPayload, ErrorType>(
+            MethodType.DELETE, learning, client, config)
+        .url(url)
+        .addHeaders(headers)
+        .timeout(timeout);
   }
 }

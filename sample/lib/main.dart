@@ -5,8 +5,12 @@ import 'package:sample/api/podo/post_response.dart';
 import 'package:sample/api/podo/register_request.dart';
 import 'package:sample/api/podo/register_response.dart';
 import 'package:sample/api/reqresin_error.dart';
+import 'package:sample/starforce.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  NetworkingFactory.init();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -16,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: StarforceView(),
     );
   }
 }
