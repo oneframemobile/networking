@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:networking/networking/model/result_model.dart';
+
 import 'generic_request_object.dart';
 import 'network_config.dart';
 import 'network_learning.dart';
@@ -82,17 +84,19 @@ class NetworkManager {
         .asList(isList);
   }
 
-  GenericRequestObject<RequestType, NoPayload, ErrorType> delete<
+  GenericRequestObject<RequestType, ResponseType, ErrorType> delete<
       RequestType extends Serializable,
-      NoPayload extends Serializable,
+      ResponseType extends Serializable,
       ErrorType>({
     String url,
+    ResponseType type,
     Iterable<Header> headers,
     Duration timeout,
   }) {
-    return new GenericRequestObject<RequestType, NoPayload, ErrorType>(
+    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(
             MethodType.DELETE, learning, client, config)
         .url(url)
+        .type(type)
         .addHeaders(headers)
         .timeout(timeout);
   }

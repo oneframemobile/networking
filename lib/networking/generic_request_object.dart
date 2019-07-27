@@ -214,7 +214,8 @@ class GenericRequestObject<RequestType extends Serializable,
         }
         if (buffer.isEmpty || _methodType == MethodType.DELETE) {
           var map = new Map<String, dynamic>();
-          model.data = NoPayload().fromJson(map);
+          var serializable = (_type as SerializableObject);
+          model.data = serializable.fromJson(map);
           model.json = map;
         } else if (!_asList) {
           var map = json.decode(buffer.toString());

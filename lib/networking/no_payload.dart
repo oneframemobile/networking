@@ -1,10 +1,10 @@
 import 'serializable_object.dart';
 
-class NoPayload extends SerializableObject<Null> {
+class NoPayload extends SerializableObject<NoPayload> {
   NoPayload();
   @override
-  Null fromJson(Map<String, dynamic> json) {
-    return null;
+  NoPayload fromJson(Map<String, dynamic> json) {
+    return this;
   }
 
   @override
