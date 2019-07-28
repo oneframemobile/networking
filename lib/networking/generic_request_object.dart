@@ -252,9 +252,13 @@ class GenericRequestObject<RequestType extends Serializable,
         error.statusCode = response.statusCode;
         error.raw = buffer.toString();
         if (buffer.isNotEmpty || buffer.toString().contains(":")) {
-          var errorMap = json.decode(buffer.toString());
-          var serializable = (_errorType as SerializableObject);
-          error.data = serializable.fromJson(errorMap);
+          try {
+            var errorMap = json.decode(buffer.toString());
+            var serializable = (_errorType as SerializableObject);
+            error.data = serializable.fromJson(errorMap);
+          } catch (e) {
+            //if service error doesn't equal set type will return empty format
+          }
         }
         if (_listener != null) {
           _listener.error(error);
