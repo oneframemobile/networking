@@ -212,7 +212,8 @@ class GenericRequestObject<RequestType extends Serializable,
           // dart lang error
           print(e);
         }
-        if (buffer.isEmpty || _methodType == MethodType.DELETE) {
+        // check empty or return single value
+        if (buffer.isEmpty || !buffer.toString().contains(":")) {
           var map = new Map<String, dynamic>();
           var serializable = (_type as SerializableObject);
           model.data = serializable.fromJson(map);
