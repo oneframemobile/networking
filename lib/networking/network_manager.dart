@@ -19,6 +19,7 @@ class NetworkManager {
       get<ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     ResponseType type,
+    ErrorType errorType,
     NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
@@ -29,6 +30,7 @@ class NetworkManager {
             MethodType.GET, learning, client, config)
         .url(url)
         .type(type)
+        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
@@ -36,13 +38,14 @@ class NetworkManager {
         .asList(asList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType > post<
+  GenericRequestObject<RequestType, ResponseType, ErrorType> post<
       RequestType extends Serializable,
       ResponseType extends Serializable,
       ErrorType extends Serializable>({
     String url,
     dynamic body,
     ResponseType type,
+    ErrorType errorType,
     NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
@@ -53,6 +56,7 @@ class NetworkManager {
             MethodType.POST, learning, client, config, body)
         .url(url)
         .type(type)
+        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
@@ -67,6 +71,7 @@ class NetworkManager {
     String url,
     dynamic body,
     ResponseType type,
+    ErrorType errorType,
     NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
@@ -77,6 +82,7 @@ class NetworkManager {
             MethodType.PUT, learning, client, config, body)
         .url(url)
         .type(type)
+        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
@@ -84,12 +90,13 @@ class NetworkManager {
         .asList(isList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType > delete<
+  GenericRequestObject<RequestType, ResponseType, ErrorType> delete<
       RequestType extends Serializable,
       ResponseType extends Serializable,
       ErrorType extends Serializable>({
     String url,
     ResponseType type,
+    ErrorType errorType,
     Iterable<Header> headers,
     Duration timeout,
   }) {
@@ -97,6 +104,7 @@ class NetworkManager {
             MethodType.DELETE, learning, client, config)
         .url(url)
         .type(type)
+        .errorType(errorType)
         .addHeaders(headers)
         .timeout(timeout);
   }

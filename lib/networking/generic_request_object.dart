@@ -29,6 +29,7 @@ class GenericRequestObject<RequestType extends Serializable,
   NetworkListener _listener;
   RequestType _body;
   ResponseType _type;
+  ErrorType _errorType;
   Set<Cookie> _cookies;
 
   bool _asList;
@@ -121,6 +122,12 @@ class GenericRequestObject<RequestType extends Serializable,
   GenericRequestObject<RequestType, ResponseType, ErrorType> type(
       ResponseType type) {
     _type = type;
+    return this;
+  }
+
+  GenericRequestObject<RequestType, ResponseType, ErrorType> errorType(
+      ErrorType type) {
+    _errorType = type;
     return this;
   }
 
@@ -246,14 +253,14 @@ class GenericRequestObject<RequestType extends Serializable,
         error.raw = buffer.toString();
         if (buffer.isNotEmpty || buffer.toString().contains(":")) {
           var errorMap = json.decode(buffer.toString());
-          var serializable = (ErrorType as SerializableObject);
+          var serializable = (_errorType as SerializableObject);
           error.data = serializable.fromJson(errorMap);
         }
         if (_listener != null) {
           _listener.error(error);
         }
 
-        return Future.error(error);
+        return Future.value(error);
       }
     } on SocketException catch (exception) {
       ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
