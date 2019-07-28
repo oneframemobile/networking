@@ -16,7 +16,7 @@ class NetworkManager {
   NetworkManager({this.client, this.learning, this.config});
 
   GenericRequestObject<Null, ResponseType, ErrorType>
-      get<ResponseType extends Serializable, ErrorType>({
+      get<ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     ResponseType type,
     NetworkListener listener,
@@ -36,10 +36,10 @@ class NetworkManager {
         .asList(asList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> post<
+  GenericRequestObject<RequestType, ResponseType, ErrorType > post<
       RequestType extends Serializable,
       ResponseType extends Serializable,
-      ErrorType>({
+      ErrorType extends Serializable>({
     String url,
     dynamic body,
     ResponseType type,
@@ -63,7 +63,7 @@ class NetworkManager {
   GenericRequestObject<RequestType, ResponseType, ErrorType> put<
       RequestType extends Serializable,
       ResponseType extends Serializable,
-      ErrorType>({
+      ErrorType extends Serializable>({
     String url,
     dynamic body,
     ResponseType type,
@@ -84,10 +84,10 @@ class NetworkManager {
         .asList(isList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> delete<
+  GenericRequestObject<RequestType, ResponseType, ErrorType > delete<
       RequestType extends Serializable,
       ResponseType extends Serializable,
-      ErrorType>({
+      ErrorType extends Serializable>({
     String url,
     ResponseType type,
     Iterable<Header> headers,

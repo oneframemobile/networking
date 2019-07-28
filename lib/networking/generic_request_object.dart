@@ -17,7 +17,7 @@ import 'serializable_list.dart';
 import 'serializable_object.dart';
 
 class GenericRequestObject<RequestType extends Serializable,
-    ResponseType extends Serializable, ErrorType> {
+    ResponseType extends Serializable, ErrorType extends Serializable> {
   Set<Header> _headers;
   ContentType _contentType;
   MethodType _methodType;
@@ -244,7 +244,11 @@ class GenericRequestObject<RequestType extends Serializable,
         error.description = response.reasonPhrase;
         error.statusCode = response.statusCode;
         error.raw = buffer.toString();
-
+        if (buffer.isNotEmpty || buffer.toString().contains(":")) {
+          var map = json.decode(buffer.toString());
+          var serializable = (ErrorType as SerializableObject);
+          error.data = serializable.fromJson(map);
+        }
         if (_listener != null) {
           _listener.error(error);
         }
