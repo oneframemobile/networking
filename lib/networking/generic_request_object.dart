@@ -264,7 +264,7 @@ class GenericRequestObject<RequestType extends Serializable,
           _listener.error(error);
         }
 
-        return Future.value(error);
+        return Future.error(error);
       }
     } on SocketException catch (exception) {
       ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
