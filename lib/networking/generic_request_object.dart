@@ -63,7 +63,14 @@ class GenericRequestObject<RequestType extends Serializable,
   GenericRequestObject<RequestType, ResponseType, ErrorType> addHeader(
       Header header) {
     if (header != null) {
-      _headers.add(header);
+      /// check same headers value. if some value income remove older value and update [header]
+      if (_headers.contains(header)) {
+        _headers.removeWhere((header) => header.key == header.key);
+        print(_headers.length);
+        _headers.add(header);
+      } else {
+        _headers.add(header);
+      }
     }
     return this;
   }

@@ -26,4 +26,20 @@ void main() {
 
     expect(data.data, isInstanceOf<ErrorResponse>());
   });
+
+
+  test('double header test ', () async {
+    final data = await _manager
+        .post<UserLoginRequest, UserLoginResponse, ErrorResponse>(
+          url: LOGIN_USER,
+          type: UserLoginResponse(),
+          errorType: ErrorResponse(),
+          body: UserLoginRequest(tckn: "10606086186", password: "123456Aa"),
+        )
+        .addHeader(Header("auth", "123"))
+        .addHeader(Header("auth", "12345"))
+        .fetch();
+
+    expect(data.data, isInstanceOf<ErrorResponse>());
+  });
 }
