@@ -244,7 +244,7 @@ class GenericRequestObject<RequestType extends Serializable,
           if (_listener != null) {
             _listener.result(model);
           }
-          return Future.error(model);
+          return Future.value(model);
         }
       } else {
         ErrorModel<ErrorType> error = new ErrorModel();
