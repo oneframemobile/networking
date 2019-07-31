@@ -227,7 +227,7 @@ class GenericRequestObject<RequestType extends Serializable,
           print(e);
         }
         // check empty or return single value
-        if (buffer.isEmpty || !buffer.toString().contains(":")) {
+        if (buffer.isEmpty || !buffer.toString().contains(":") && !_asList) {
           var map = new Map<String, dynamic>();
           var serializable = (_type as SerializableObject);
           model.data = serializable.fromJson(map);
@@ -265,6 +265,7 @@ class GenericRequestObject<RequestType extends Serializable,
             error.data = serializable.fromJson(errorMap);
           } catch (e) {
             //if service error doesn't equal set type will return empty format
+            return Future.error(error);
           }
         }
         if (_listener != null) {
