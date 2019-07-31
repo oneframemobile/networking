@@ -278,7 +278,11 @@ class GenericRequestObject<RequestType extends Serializable,
       error.description = exception.message;
       error.type = NetworkErrorTypes.NETWORK_ERROR;
       if (_listener != null) {
-        _listener.error(error as dynamic);
+        if (error != null) {
+          _listener.error(error);
+        } else {
+          _listener.error(error as dynamic);
+        }
       }
 
       return Future.error(error);
@@ -287,7 +291,11 @@ class GenericRequestObject<RequestType extends Serializable,
       error.description = exception.message;
       error.type = NetworkErrorTypes.TIMEOUT_ERROR;
       if (_listener != null) {
-        _listener.error(error as dynamic);
+        if (error != null) {
+          _listener.error(error);
+        } else {
+          _listener.error(error as dynamic);
+        }
       }
 
       return Future.error(error);
