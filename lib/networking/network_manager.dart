@@ -106,6 +106,7 @@ class NetworkManager {
         .type(type)
         .errorType(errorType)
         .addHeaders(headers)
-        .timeout(timeout);
+        .timeout(timeout)
+        .asList(false);
   }
 }
