@@ -7,7 +7,7 @@ class MyLearning extends NetworkLearning {
   }
 
   @override
-  checkSuccess(NetworkListener listener, ResultModel result) {
+  checkSuccess<T>(NetworkListener listener, ResultModel result) {
     try {
       var data = result.data as dynamic;
       if (data.errorMessage == null) {

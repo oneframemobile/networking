@@ -8,12 +8,16 @@ import 'package:networking/networking/network_listener.dart';
 class FirebaseLearning extends NetworkLearning {
   @override
   checkCustomError(NetworkListener listener, ErrorModel error) async {
-    await error.request.fetch();
-    return null;
+    // await error.request.fetch();
+    // if (error.statusCode ==) {
+
+    // } else {
+    // }
+    return error.data;
   }
 
   @override
-  checkSuccess(NetworkListener listener, ResultModel result) {
+  checkSuccess<T>(NetworkListener listener, ResultModel result) {
     print(result.data);
 
     return result;

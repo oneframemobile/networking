@@ -243,7 +243,7 @@ class GenericRequestObject<RequestType extends Serializable,
         }
 
         if (_learning != null) {
-          return _learning.checkSuccess(_listener, model);
+          return _learning.checkSuccess<ResponseType>(_listener, model);
         } else {
           if (_listener != null) {
             _listener.result(model);
@@ -256,7 +256,7 @@ class GenericRequestObject<RequestType extends Serializable,
         error.statusCode = response.statusCode;
         error.raw = buffer.toString();
         error.request = this;
-        
+
         if (_learning != null)
           return await _learning.checkCustomError(_listener, error);
         else {

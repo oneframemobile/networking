@@ -14,6 +14,7 @@ void main() {
     NetworkConfig _config = NetworkConfig();
 
     _config.setBaseUrl("https://swaggercodegen.firebaseio.com/");
+  
     manager =
         NetworkingFactory.create(config: _config, learning: FirebaseLearning());
   });
@@ -36,7 +37,7 @@ void main() {
         .post(url: "user.json", body: user, type: NoPayload())
         .fetch()) as ResultModel<dynamic>;
 
-    expect(response.data, null);
+    expect(response.data != null, true);
   });
 
   test('firebase add put user', () async {

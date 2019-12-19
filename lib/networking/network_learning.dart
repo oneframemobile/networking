@@ -3,10 +3,9 @@ import 'model/result_model.dart';
 import 'network_listener.dart';
 
 abstract class NetworkLearning {
-  
   checkCustomError(NetworkListener listener, ErrorModel error);
 
-  checkSuccess(NetworkListener listener, ResultModel result);
+  checkSuccess<T>(NetworkListener listener, ResultModel result);
 
   sendSuccess(NetworkListener listener, ResultModel result) {
     listener.result(result);
