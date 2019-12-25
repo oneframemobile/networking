@@ -214,7 +214,7 @@ class GenericRequestObject<RequestType extends Serializable,
       }
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        ResultModel<ResponseType> model = new ResultModel();
+        ResultModel model = ResultModel();
         model.result = buffer.toString();
         model.url = _uri.toString();
 
@@ -229,26 +229,23 @@ class GenericRequestObject<RequestType extends Serializable,
           var serializable = (_type as SerializableObject);
           model.data = serializable.fromJson(map);
           model.json = map;
-        } else if (!_asList) {
-          var map = json.decode(buffer.toString());
-          var serializable = (_type as SerializableObject);
-          model.data = serializable.fromJson(map);
-          model.json = map;
         } else {
-          Iterable iterable = json.decode(buffer.toString());
-          var serializable = (_type as SerializableList);
-          serializable.list = serializable.fromJsonList(iterable);
-          model.data = _type;
-          model.jsonList = iterable;
+          var map = json.decode(buffer.toString());
+          model.jsonString = buffer.toString();
+          var serializable = (_type as SerializableObject);
+
+          // result list control
+          if (map is List)
+            model.data = fromJsonList(map, _type);
+          else
+            model.data = serializable.fromJson(map);
         }
 
-        if (_learning != null) {
+        if (_learning != null)
           return _learning.checkSuccess<ResponseType>(_listener, model);
-        } else {
-          if (_listener != null) {
-            _listener.result(model);
-          }
-          return Future.value(model);
+        else {
+          _listener?.result(model);
+          return model;
         }
       } else {
         ErrorModel<ErrorType> error = new ErrorModel();
@@ -260,8 +257,8 @@ class GenericRequestObject<RequestType extends Serializable,
         if (_learning != null)
           return await _learning.checkCustomError(_listener, error);
         else {
-          if (_listener != null) _listener.error(error);
-          return Future.error(error);
+          _listener?.error(error);
+          throw (error);
         }
       }
     } on SocketException catch (exception) {
@@ -271,27 +268,25 @@ class GenericRequestObject<RequestType extends Serializable,
     }
   }
 
+  List fromJsonList(List json, dynamic model) {
+    return json
+        .map((fields) => model.fromJson(fields))
+        .cast<ResponseType>()
+        .toList();
+  }
+
   Future customErrorHandler(exception, NetworkErrorTypes types) {
     ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
     error.description = exception.message;
     error.type = types;
     error.request = this;
-    if (_listener != null) {
-      if (error != null) {
-        _listener.error(error);
-      } else {
-        _listener.error(error as dynamic);
-      }
-    }
 
-    if (_learning != null) {
-      return _learning.checkCustomError(_listener, error);
-    } else {
-      if (_listener != null) {
-        _listener.error(error);
-      }
-      return Future.error(error);
-    }
+    _listener?.error(error);
+
+    if (_learning != null)
+      return _learning?.checkCustomError(_listener, error);
+    else
+      throw (error);
   }
 
   void enqueue() {
