@@ -275,7 +275,7 @@ class GenericRequestObject<RequestType extends Serializable,
         .toList();
   }
 
-  Future customErrorHandler(exception, NetworkErrorTypes types) {
+  void customErrorHandler(exception, NetworkErrorTypes types) {
     ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
     error.description = exception.message;
     error.type = types;
@@ -284,7 +284,7 @@ class GenericRequestObject<RequestType extends Serializable,
     _listener?.error(error);
 
     if (_learning != null)
-      return _learning?.checkCustomError(_listener, error);
+      throw _learning.checkCustomError(_listener, error);
     else
       throw (error);
   }
