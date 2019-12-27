@@ -14,19 +14,17 @@ void main() {
     NetworkConfig _config = NetworkConfig();
 
     _config.setBaseUrl("https://swaggercodegen.firebaseio.com/");
-  
+
     manager =
         NetworkingFactory.create(config: _config, learning: FirebaseLearning());
   });
 
   test('firebase user list', () async {
-    var response = (await manager
-        .get(url: "users.json", asList: true, type: UserList())
-        .fetch()) as ResultModel<UserList>;
+    var response = (await manager.get(url: "users.json", type: User()).fetch());
 
-    print(response.data.list);
+    print(response.data);
 
-    expect(response.data.list.length > 0, true);
+    expect(response.data.length > 0, true);
   });
 
   test('firebase add post user', () async {

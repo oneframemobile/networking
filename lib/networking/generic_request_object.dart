@@ -154,17 +154,18 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   Future<HttpClientRequest> _request() {
+    final client = HttpClient();
     switch (_methodType) {
       case MethodType.GET:
-        return _client.getUrl(_uri);
+        return client.getUrl(_uri);
       case MethodType.POST:
-        return _client.postUrl(_uri);
+        return client.postUrl(_uri);
       case MethodType.PUT:
-        return _client.putUrl(_uri);
+        return client.putUrl(_uri);
       case MethodType.DELETE:
-        return _client.deleteUrl(_uri);
+        return client.deleteUrl(_uri);
       case MethodType.UPDATE:
-        return _client.patchUrl(_uri);
+        return client.patchUrl(_uri);
     }
 
     throw new Exception("Unknown method type");
@@ -173,9 +174,7 @@ class GenericRequestObject<RequestType extends Serializable,
   Future<dynamic> fetch() async {
     try {
       var request = await _request();
-      if (_config != null) {
-        _headers.addAll(_config.headers);
-      }
+      // var request = await HttpClient().postUrl(_uri);
 
       if (_cookies != null) {
         _cookies.forEach((cookie) => request.cookies.add(cookie));
@@ -204,8 +203,8 @@ class GenericRequestObject<RequestType extends Serializable,
           }
         }
       }
-
       var response = await request.close();
+
       response.timeout(_config != null ? _config.timeout : _timeout);
 
       var buffer = new StringBuffer();
@@ -241,6 +240,7 @@ class GenericRequestObject<RequestType extends Serializable,
             model.data = serializable.fromJson(map);
         }
 
+        await request.done;
         if (_learning != null)
           return _learning.checkSuccess<ResponseType>(_listener, model);
         else {
