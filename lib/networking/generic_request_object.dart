@@ -174,12 +174,8 @@ class GenericRequestObject<RequestType extends Serializable,
   Future<dynamic> fetch() async {
     try {
       var request = await _request();
-      // var request = await HttpClient().postUrl(_uri);
 
-      if (_cookies != null) {
-        _cookies.forEach((cookie) => request.cookies.add(cookie));
-      }
-
+      _cookies?.forEach((cookie) => request.cookies.add(cookie));
       _headers
           .forEach((header) => request.headers.add(header.key, header.value));
 
