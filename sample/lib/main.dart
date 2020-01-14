@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       NetworkingFactory.init();
       NetworkManager manager = NetworkingFactory.create(learning: learning);
       manager
-          .post<RegisterRequest, RegisterResponse, ReqResInError>(
+          .post<RegisterRequest, RegisterResponse>(
               url: "https://reqres.in/api/register",
               body: request,
               type: new RegisterResponse(),

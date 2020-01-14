@@ -27,6 +27,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
   dynamic _body;
   ResponseType _type;
   Set<Cookie> _cookies;
+  bool _isParse;
 
   final RequestId id = new RequestId();
 
@@ -39,6 +40,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
     _headers = new Set();
     _cookies = new Set();
     _timeout = Duration(seconds: 60);
+    _isParse = false;
   }
 
   GenericRequestObject<ResponseType> url(String url) {
@@ -104,6 +106,11 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
   GenericRequestObject<ResponseType> timeout(Duration timeout) {
     _timeout = timeout;
+    return this;
+  }
+
+  GenericRequestObject<ResponseType> isParse(bool isParse) {
+    _isParse = isParse;
     return this;
   }
 
@@ -183,8 +190,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
           }
         }
       }
-      var response = await request.close();
 
+      var response = await request.close();
       response.timeout(_config != null ? _config.timeout : _timeout);
 
       var buffer = new StringBuffer();
@@ -200,6 +207,11 @@ class GenericRequestObject<ResponseType extends Serializable> {
         // check cookkies
         if (response.cookies != null) {
           model.cookies = response.cookies;
+        }
+
+        if (_isParse) {
+          await request.done;
+          return _learning.checkSuccess<ResponseType>(_listener, model);
         }
 
         // check empty or return single value
