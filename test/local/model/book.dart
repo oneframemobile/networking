@@ -1,4 +1,3 @@
-import 'package:networking/networking/serializable_list.dart';
 import 'package:networking/networking/serializable_object.dart';
 
 class Book extends SerializableObject<Book> {

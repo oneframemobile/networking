@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:networking/networking.dart';
 
 import 'learning/firebase_learning.dart';
@@ -42,10 +41,10 @@ void main() {
     var user =
         User(identity: "asd", name: "vv", surname: "asdasd", userID: "1234");
 
-    var responseUserList = (await manager
-        .get(url: "users.json", asList: true, type: UserList())
-        .fetch()) as ResultModel<UserList>;
-    final lastIndex = responseUserList.data.list.length;
+    var responseUserList =
+        (await manager.get(url: "users.json", type: User()).fetch());
+
+    final lastIndex = responseUserList.data.length;
 
     var response = (await manager
         .put(url: "users/$lastIndex.json", body: user, type: NoPayload())
@@ -55,9 +54,8 @@ void main() {
   });
 
   test('firebase delete  user', () async {
-    var responseUserList = (await manager
-        .get(url: "users.json", asList: true, type: UserList())
-        .fetch()) as ResultModel<UserList>;
+    var responseUserList =
+        (await manager.get(url: "users.json", type: User()).fetch());
     final lastIndex = responseUserList.data.list.length - 1;
 
     var response = (await manager
@@ -80,8 +78,8 @@ void main() {
     var response = (await manager.get(url: ".json", type: Complex()).fetch())
         as ResultModel;
 
-    int statusParse =
-        resolve(json: response.json, path: "code", defaultValue: 10);
+    // int statusParse =
+    //     resolve(json: response.json, path: "code", defaultValue: 10);
     List<Users> usesrList = resolve(
             json: response.json, path: "users", defaultValue: List<dynamic>())
         .cast<Users>()

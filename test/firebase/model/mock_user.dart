@@ -31,19 +31,4 @@ class User extends SerializableObject<User> {
   }
 }
 
-class UserList extends SerializableList<User> {
-  @override
-  List<User> list;
-  
-  @override
-  List<User> fromJsonList(List json) {
-    return json.map((fields) => User.fromJson(fields)).toList();
-  }
-
-  @override
-  List<Map<String, dynamic>> toJsonList() {
-    throw new UnsupportedError("Not needed");
-  }
-}
-
 class MockUser extends Mock implements User {}

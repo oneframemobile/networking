@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'package:networking/networking/model/result_model.dart';
 
 import 'generic_request_object.dart';
+import 'header.dart';
 import 'network_config.dart';
 import 'network_learning.dart';
 import 'network_listener.dart';
 import 'serializable.dart';
-import 'header.dart';
 
 class NetworkManager {
   HttpClient client;
@@ -15,7 +14,7 @@ class NetworkManager {
 
   NetworkManager({this.client, this.learning, this.config});
 
-  GenericRequestObject<Null, ResponseType, ErrorType>
+  GenericRequestObject<ResponseType>
       get<ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     ResponseType type,
@@ -24,24 +23,18 @@ class NetworkManager {
     ContentType contentType,
     Iterable<Header> headers,
     Duration timeout,
-    bool asList = false,
   }) {
-    return new GenericRequestObject<Null, ResponseType, ErrorType>(
-            MethodType.GET, learning, client, config)
+    return GenericRequestObject<ResponseType>(MethodType.GET, learning, config)
         .url(url)
         .type(type)
-        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
-        .timeout(timeout)
-        .asList(asList);
+        .timeout(timeout);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> post<
-      RequestType extends Serializable,
-      ResponseType extends Serializable,
-      ErrorType extends Serializable>({
+  GenericRequestObject<ResponseType> post<RequestType extends Serializable,
+      ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     dynamic body,
     ResponseType type,
@@ -52,22 +45,17 @@ class NetworkManager {
     Duration timeout,
     bool isList = false,
   }) {
-    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(
-            MethodType.POST, learning, client, config, body)
+    return GenericRequestObject<ResponseType>(MethodType.POST, learning, body)
         .url(url)
         .type(type)
-        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
-        .timeout(timeout)
-        .asList(isList);
+        .timeout(timeout);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> put<
-      RequestType extends Serializable,
-      ResponseType extends Serializable,
-      ErrorType extends Serializable>({
+  GenericRequestObject<ResponseType> put<RequestType extends Serializable,
+      ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     dynamic body,
     ResponseType type,
@@ -78,35 +66,29 @@ class NetworkManager {
     Duration timeout,
     bool isList = false,
   }) {
-    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(
-            MethodType.PUT, learning, client, config, body)
+    return GenericRequestObject<ResponseType>(
+            MethodType.PUT, learning, config, body)
         .url(url)
         .type(type)
-        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
-        .timeout(timeout)
-        .asList(isList);
+        .timeout(timeout);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> delete<
-      RequestType extends Serializable,
-      ResponseType extends Serializable,
-      ErrorType extends Serializable>({
+  GenericRequestObject<ResponseType> delete<RequestType extends Serializable,
+      ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     ResponseType type,
     ErrorType errorType,
     Iterable<Header> headers,
     Duration timeout,
   }) {
-    return new GenericRequestObject<RequestType, ResponseType, ErrorType>(
-            MethodType.DELETE, learning, client, config)
+    return GenericRequestObject<ResponseType>(
+            MethodType.DELETE, learning, config)
         .url(url)
         .type(type)
-        .errorType(errorType)
         .addHeaders(headers)
-        .timeout(timeout)
-        .asList(false);
+        .timeout(timeout);
   }
 }

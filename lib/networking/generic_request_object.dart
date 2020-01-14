@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 import 'header.dart';
 import 'model/error_model.dart';
 import 'model/result_model.dart';
@@ -11,32 +13,26 @@ import 'network_listener.dart';
 import 'network_queue.dart';
 import 'request_id.dart';
 import 'serializable.dart';
-import 'serializable_list.dart';
 import 'serializable_object.dart';
 
-class GenericRequestObject<RequestType extends Serializable,
-    ResponseType extends Serializable, ErrorType extends Serializable> {
+class GenericRequestObject<ResponseType extends Serializable> {
   Set<Header> _headers;
   ContentType _contentType;
   MethodType _methodType;
   Duration _timeout;
   Uri _uri;
   NetworkLearning _learning;
-  HttpClient _client;
   NetworkConfig _config;
   NetworkListener _listener;
-  RequestType _body;
+  dynamic _body;
   ResponseType _type;
-  ErrorType _errorType;
   Set<Cookie> _cookies;
 
-  bool _asList;
   final RequestId id = new RequestId();
 
   GenericRequestObject(
     this._methodType,
     this._learning,
-    this._client,
     this._config, [
     this._body,
   ]) {
@@ -45,21 +41,19 @@ class GenericRequestObject<RequestType extends Serializable,
     _timeout = Duration(seconds: 60);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> url(String url) {
+  GenericRequestObject<ResponseType> url(String url) {
     _uri = Uri.parse(_config != null ? _config.baseUrl + url : url);
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeaders(
-      Iterable<Header> headers) {
+  GenericRequestObject<ResponseType> addHeaders(Iterable<Header> headers) {
     if (headers != null) {
       _headers.addAll(headers);
     }
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addHeader(
-      Header header) {
+  GenericRequestObject<ResponseType> addHeader(Header header) {
     if (header != null) {
       /// check same headers value. if some value income remove older value and update [header]
       if (_headers.contains(header)) {
@@ -73,24 +67,21 @@ class GenericRequestObject<RequestType extends Serializable,
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addCookies(
-      Iterable<Cookie> cookies) {
+  GenericRequestObject<ResponseType> addCookies(Iterable<Cookie> cookies) {
     if (cookies != null) {
       _cookies.addAll(cookies);
     }
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addCookie(
-      Cookie cookie) {
+  GenericRequestObject<ResponseType> addCookie(Cookie cookie) {
     if (cookie != null) {
       _cookies.add(cookie);
     }
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> addQuery(
-      String key, String value) {
+  GenericRequestObject<ResponseType> addQuery(String key, String value) {
     if (_uri.toString().contains("?")) {
       _uri = Uri.parse(_uri.toString() + "&$key=$value");
     } else {
@@ -99,56 +90,39 @@ class GenericRequestObject<RequestType extends Serializable,
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType>
-      addHeaderWithParameters(String key, String value) {
+  GenericRequestObject<ResponseType> addHeaderWithParameters(
+      String key, String value) {
     var header = new Header(key, value);
     _headers.add(header);
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> contentType(
-      ContentType contentType) {
+  GenericRequestObject<ResponseType> contentType(ContentType contentType) {
     _contentType = contentType;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> timeout(
-      Duration timeout) {
+  GenericRequestObject<ResponseType> timeout(Duration timeout) {
     _timeout = timeout;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> listener(
-      NetworkListener listener) {
+  GenericRequestObject<ResponseType> listener(NetworkListener listener) {
     _listener = listener;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> type(
-      ResponseType type) {
+  GenericRequestObject<ResponseType> type(ResponseType type) {
     _type = type;
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> errorType(
-      ErrorType type) {
-    _errorType = type;
-    return this;
-  }
-
-  GenericRequestObject<RequestType, ResponseType, ErrorType> asList(
-      bool asList) {
-    _asList = asList;
-    return this;
-  }
-
-  GenericRequestObject<RequestType, ResponseType, ErrorType> query(
-      String key, String value) {
+  GenericRequestObject<ResponseType> query(String key, String value) {
     _uri = Uri.parse(_uri.toString() + "?$key=$value");
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> path(String path) {
+  GenericRequestObject<ResponseType> path(String path) {
     _uri = Uri.parse(_uri.toString() + "/$path");
     return this;
   }
@@ -188,14 +162,24 @@ class GenericRequestObject<RequestType extends Serializable,
         );
 
         if (_body != null) {
-          if (_body is SerializableObject) {
+          // request body parser
+          if (_body is List) {
+            if (_body.first is SerializableObject) {
+              var mapList = _body
+                  .map((SerializableObject item) => item.toJson())
+                  .toList();
+              var jsonMapList = json.encode(mapList);
+              request.write(jsonMapList);
+            } else {
+              throw ErrorDescription(
+                  "Body list param does not have serializable object");
+            }
+          } else if (_body is SerializableObject) {
             SerializableObject serializable = _body as SerializableObject;
             var map = json.encode(serializable.toJson());
             request.write(map);
-          } else if (_body is SerializableList) {
-            SerializableList serializable = _body as SerializableList;
-            var map = json.encode(serializable.toJsonList());
-            request.write(map);
+          } else {
+            request.write(json.encode(_body));
           }
         }
       }
@@ -219,21 +203,20 @@ class GenericRequestObject<RequestType extends Serializable,
         }
 
         // check empty or return single value
-        if (buffer.isEmpty || !buffer.toString().contains(":") && !_asList) {
-          var map = new Map<String, dynamic>();
-          var serializable = (_type as SerializableObject);
-          model.data = serializable.fromJson(map);
-          model.json = map;
-        } else {
-          var map = json.decode(buffer.toString());
+        if (buffer.isNotEmpty) {
+          var body = json.decode(buffer.toString());
           model.jsonString = buffer.toString();
           var serializable = (_type as SerializableObject);
 
-          // result list control
-          if (map is List)
-            model.data = fromJsonList(map, _type);
+          if (body is List)
+            model.data = body
+                .map((data) => serializable.fromJson(data))
+                .cast<ResponseType>()
+                .toList();
+          else if (body is Map)
+            model.data = serializable.fromJson(body) as ResponseType;
           else
-            model.data = serializable.fromJson(map);
+            model.data = body;
         }
 
         await request.done;
@@ -244,7 +227,7 @@ class GenericRequestObject<RequestType extends Serializable,
           return model;
         }
       } else {
-        ErrorModel<ErrorType> error = new ErrorModel();
+        ErrorModel error = ErrorModel();
         error.description = response.reasonPhrase;
         error.statusCode = response.statusCode;
         error.raw = buffer.toString();
@@ -272,7 +255,7 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   void customErrorHandler(exception, NetworkErrorTypes types) {
-    ErrorModel<ErrorType> error = new ErrorModel<ErrorType>();
+    ErrorModel error = ErrorModel();
     error.description = exception.message;
     error.type = types;
     error.request = this;

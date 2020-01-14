@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:networking/networking.dart';
 import 'package:sample/api/podo/my_learning.dart';
-import 'package:sample/api/podo/post_response.dart';
 import 'package:sample/api/podo/register_request.dart';
 import 'package:sample/api/podo/register_response.dart';
 import 'package:sample/api/reqresin_error.dart';
