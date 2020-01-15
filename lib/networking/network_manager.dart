@@ -21,7 +21,7 @@ class NetworkManager {
       ContentType contentType,
       Iterable<Header> headers,
       Duration timeout,
-      bool isParse}) {
+      bool isParse = false}) {
     return GenericRequestObject<ResponseType>(MethodType.GET, learning, config)
         .url(url)
         .type(type)
@@ -41,7 +41,6 @@ class NetworkManager {
           ContentType contentType,
           Iterable<Header> headers,
           Duration timeout,
-          bool isList = false,
           bool isParse = false}) {
     return GenericRequestObject<ResponseType>(MethodType.POST, learning, body)
         .url(url)
@@ -62,7 +61,6 @@ class NetworkManager {
           ContentType contentType,
           Iterable<Header> headers,
           Duration timeout,
-          bool isList = false,
           bool isParse = false}) {
     return GenericRequestObject<ResponseType>(
             MethodType.PUT, learning, config, body)

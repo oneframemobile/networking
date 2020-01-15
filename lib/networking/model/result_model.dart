@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'dart:typed_data';
+
 class ResultModel<T> {
   T data;
   String url;
@@ -8,6 +10,7 @@ class ResultModel<T> {
   Iterable jsonList;
   String result;
   List<Cookie> cookies;
+  Uint8List bodyBytes;
 
   ResultModel();
 }

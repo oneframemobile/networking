@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
@@ -195,14 +196,35 @@ class GenericRequestObject<ResponseType extends Serializable> {
       response.timeout(_config != null ? _config.timeout : _timeout);
 
       var buffer = new StringBuffer();
-      await for (var contents in response.transform(Utf8Decoder())) {
-        buffer.write(contents);
-      }
+      var downloadData = List<int>();
+
+      var _list = await response.toList();
+      _list.forEach((data) {
+        downloadData.addAll(data);
+        try {
+          buffer.write(utf8.decode(data));
+        } catch (e) {}
+      });
+
+      // // _response.
+      // var list2 = await _response.transform(utf8.decoder).toList();
+      // list2.forEach((f) => buffer.write(f));
+      // await for (var contents in _response.transform(utf8.decoder)) {
+      //   buffer.write(contents);
+      // }
+      // try {
+      //   for (var contents in response.transform(utf8.decoder)) {
+      //     buffer.write(contents);
+      //   }
+      // } catch (e) {
+      //   print(e);
+      // }
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         ResultModel model = ResultModel();
         model.result = buffer.toString();
         model.url = _uri.toString();
+        model.bodyBytes = Uint8List.fromList(downloadData);
 
         // check cookkies
         if (response.cookies != null) {

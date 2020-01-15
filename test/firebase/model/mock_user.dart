@@ -1,4 +1,3 @@
-import 'package:mockito/mockito.dart';
 import 'package:networking/networking.dart';
 
 class User extends SerializableObject<User> {
@@ -30,5 +29,3 @@ class User extends SerializableObject<User> {
     return User.fromJson(json);
   }
 }
-
-class MockUser extends Mock implements User {}
