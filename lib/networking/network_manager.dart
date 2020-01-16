@@ -42,7 +42,8 @@ class NetworkManager {
           Iterable<Header> headers,
           Duration timeout,
           bool isParse = false}) {
-    return GenericRequestObject<ResponseType>(MethodType.POST, learning, body)
+    return GenericRequestObject<ResponseType>(
+            MethodType.POST, learning, config, body)
         .url(url)
         .type(type)
         .listener(listener)
