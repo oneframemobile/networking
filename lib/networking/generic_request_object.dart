@@ -16,7 +16,8 @@ import 'request_id.dart';
 import 'serializable.dart';
 import 'serializable_object.dart';
 
-class GenericRequestObject<ResponseType extends Serializable> {
+class GenericRequestObject<RequestType extends Serializable,
+    ResponseType extends Serializable> {
   Set<Header> _headers;
   ContentType _contentType;
   MethodType _methodType;
@@ -44,19 +45,20 @@ class GenericRequestObject<ResponseType extends Serializable> {
     _isParse = false;
   }
 
-  GenericRequestObject<ResponseType> url(String url) {
+  GenericRequestObject<RequestType, ResponseType> url(String url) {
     _uri = Uri.parse(_config != null ? _config.baseUrl + url : url);
     return this;
   }
 
-  GenericRequestObject<ResponseType> addHeaders(Iterable<Header> headers) {
+  GenericRequestObject<RequestType, ResponseType> addHeaders(
+      Iterable<Header> headers) {
     if (headers != null) {
       _headers.addAll(headers);
     }
     return this;
   }
 
-  GenericRequestObject<ResponseType> addHeader(Header header) {
+  GenericRequestObject<RequestType, ResponseType> addHeader(Header header) {
     if (header != null) {
       /// check same headers value. if some value income remove older value and update [header]
       if (_headers.contains(header)) {
@@ -70,21 +72,23 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> addCookies(Iterable<Cookie> cookies) {
+  GenericRequestObject<RequestType, ResponseType> addCookies(
+      Iterable<Cookie> cookies) {
     if (cookies != null) {
       _cookies.addAll(cookies);
     }
     return this;
   }
 
-  GenericRequestObject<ResponseType> addCookie(Cookie cookie) {
+  GenericRequestObject<RequestType, ResponseType> addCookie(Cookie cookie) {
     if (cookie != null) {
       _cookies.add(cookie);
     }
     return this;
   }
 
-  GenericRequestObject<ResponseType> addQuery(String key, String value) {
+  GenericRequestObject<RequestType, ResponseType> addQuery(
+      String key, String value) {
     if (_uri.toString().contains("?")) {
       _uri = Uri.parse(_uri.toString() + "&$key=$value");
     } else {
@@ -93,44 +97,47 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> addHeaderWithParameters(
+  GenericRequestObject<RequestType, ResponseType> addHeaderWithParameters(
       String key, String value) {
     var header = new Header(key, value);
     _headers.add(header);
     return this;
   }
 
-  GenericRequestObject<ResponseType> contentType(ContentType contentType) {
+  GenericRequestObject<RequestType, ResponseType> contentType(
+      ContentType contentType) {
     _contentType = contentType;
     return this;
   }
 
-  GenericRequestObject<ResponseType> timeout(Duration timeout) {
+  GenericRequestObject<RequestType, ResponseType> timeout(Duration timeout) {
     _timeout = timeout;
     return this;
   }
 
-  GenericRequestObject<ResponseType> isParse(bool isParse) {
+  GenericRequestObject<RequestType, ResponseType> isParse(bool isParse) {
     _isParse = isParse;
     return this;
   }
 
-  GenericRequestObject<ResponseType> listener(NetworkListener listener) {
+  GenericRequestObject<RequestType, ResponseType> listener(
+      NetworkListener listener) {
     _listener = listener;
     return this;
   }
 
-  GenericRequestObject<ResponseType> type(ResponseType type) {
+  GenericRequestObject<RequestType, ResponseType> type(ResponseType type) {
     _type = type;
     return this;
   }
 
-  GenericRequestObject<ResponseType> query(String key, String value) {
+  GenericRequestObject<RequestType, ResponseType> query(
+      String key, String value) {
     _uri = Uri.parse(_uri.toString() + "?$key=$value");
     return this;
   }
 
-  GenericRequestObject<ResponseType> path(String path) {
+  GenericRequestObject<RequestType, ResponseType> path(String path) {
     _uri = Uri.parse(_uri.toString() + "/$path");
     return this;
   }
@@ -205,20 +212,6 @@ class GenericRequestObject<ResponseType extends Serializable> {
           buffer.write(utf8.decode(data));
         } catch (e) {}
       });
-
-      // // _response.
-      // var list2 = await _response.transform(utf8.decoder).toList();
-      // list2.forEach((f) => buffer.write(f));
-      // await for (var contents in _response.transform(utf8.decoder)) {
-      //   buffer.write(contents);
-      // }
-      // try {
-      //   for (var contents in response.transform(utf8.decoder)) {
-      //     buffer.write(contents);
-      //   }
-      // } catch (e) {
-      //   print(e);
-      // }
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         ResultModel model = ResultModel();
