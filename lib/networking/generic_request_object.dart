@@ -224,7 +224,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
         // check empty or return single value
         if (buffer.isNotEmpty) {
-          bool isJson;
+          bool isJson = false;
           try {
             var body = json.decode(model.result);
             isJson = true;
