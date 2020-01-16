@@ -206,20 +206,6 @@ class GenericRequestObject<ResponseType extends Serializable> {
         } catch (e) {}
       });
 
-      // // _response.
-      // var list2 = await _response.transform(utf8.decoder).toList();
-      // list2.forEach((f) => buffer.write(f));
-      // await for (var contents in _response.transform(utf8.decoder)) {
-      //   buffer.write(contents);
-      // }
-      // try {
-      //   for (var contents in response.transform(utf8.decoder)) {
-      //     buffer.write(contents);
-      //   }
-      // } catch (e) {
-      //   print(e);
-      // }
-
       if (response.statusCode >= 200 && response.statusCode < 300) {
         ResultModel model = ResultModel();
         model.result = buffer.toString();
@@ -238,19 +224,23 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
         // check empty or return single value
         if (buffer.isNotEmpty) {
-          var body = json.decode(buffer.toString());
-          model.jsonString = buffer.toString();
-          var serializable = (_type as SerializableObject);
+          try {
+            var body = json.decode(model.result);
+            model.jsonString = buffer.toString();
+            var serializable = (_type as SerializableObject);
 
-          if (body is List)
-            model.data = body
-                .map((data) => serializable.fromJson(data))
-                .cast<ResponseType>()
-                .toList();
-          else if (body is Map)
-            model.data = serializable.fromJson(body) as ResponseType;
-          else
-            model.data = body;
+            if (body is List)
+              model.data = body
+                  .map((data) => serializable.fromJson(data))
+                  .cast<ResponseType>()
+                  .toList();
+            else if (body is Map)
+              model.data = serializable.fromJson(body) as ResponseType;
+            else
+              model.data = body;
+          } catch (e) {
+            model.result = "";
+          }
         }
 
         await request.done;
