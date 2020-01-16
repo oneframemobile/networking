@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'header.dart';
@@ -194,40 +195,29 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
       var response = await request.close();
       response.timeout(_config != null ? _config.timeout : _timeout);
-
       var buffer = new StringBuffer();
-      var downloadData = List<int>();
 
-      var _list = await response.toList();
-      _list.forEach((data) {
-        downloadData.addAll(data);
-        try {
-          buffer.write(utf8.decode(data));
-        } catch (e) {}
-      });
+      var bytes = await consolidateHttpClientResponseBytes(response);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         ResultModel model = ResultModel();
-        model.result = buffer.toString();
         model.url = _uri.toString();
-        model.bodyBytes = Uint8List.fromList(downloadData);
-
         // check cookkies
         if (response.cookies != null) {
           model.cookies = response.cookies;
         }
 
-        if (_isParse) {
-          await request.done;
-          return _learning.checkSuccess<ResponseType>(_listener, model);
-        }
+        try {
+          model.result = utf8.decode(bytes);
+          if (_isParse) {
+            await request.done;
+            return _learning.checkSuccess<ResponseType>(_listener, model);
+          }
 
-        // check empty or return single value
-        if (buffer.isNotEmpty) {
-          bool isJson = false;
-          try {
+          buffer.write(String.fromCharCodes(bytes));
+          // check empty or return single value
+          if (buffer.isNotEmpty) {
             var body = json.decode(model.result);
-            isJson = true;
             model.jsonString = buffer.toString();
             var serializable = (_type as SerializableObject);
 
@@ -240,9 +230,12 @@ class GenericRequestObject<ResponseType extends Serializable> {
               model.data = serializable.fromJson(body) as ResponseType;
             else
               model.data = body;
-          } catch (e) {
-            model.result = isJson ? model.result : "";
           }
+        } catch (e) {
+          String s = String.fromCharCodes(bytes);
+          model.bodyBytes = new Uint8List.fromList(s.codeUnits);
+          model.result = "";
+          print(e);
         }
 
         await request.done;
@@ -289,7 +282,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
     _listener?.error(error);
 
     if (_learning != null)
-      throw _learning.checkCustomError(_listener, error);
+      return _learning.checkCustomError(_listener, error);
     else
       throw (error);
   }

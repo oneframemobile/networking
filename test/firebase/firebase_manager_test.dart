@@ -21,6 +21,16 @@ void main() {
   test('firebase user list', () async {
     var response = (await manager.get(url: "users.json", type: User()).fetch());
 
+    print(response);
+
+    expect(response.data.length > 0, true);
+  });
+
+  test('firebase user list', () async {
+    var response = (await manager
+        .get(url: "vb.json", type: User(), isParse: true)
+        .fetch());
+
     print(response.data);
 
     expect(response.data.length > 0, true);
