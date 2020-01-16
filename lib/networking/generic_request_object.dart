@@ -224,8 +224,10 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
         // check empty or return single value
         if (buffer.isNotEmpty) {
+          bool isJson;
           try {
             var body = json.decode(model.result);
+            isJson = true;
             model.jsonString = buffer.toString();
             var serializable = (_type as SerializableObject);
 
@@ -239,7 +241,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
             else
               model.data = body;
           } catch (e) {
-            model.result = "";
+            model.result = isJson ? model.result : "";
           }
         }
 
