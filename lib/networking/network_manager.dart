@@ -14,17 +14,15 @@ class NetworkManager {
 
   NetworkManager({this.client, this.learning, this.config});
 
-  GenericRequestObject<Null, ResponseType>
-      get<ResponseType extends Serializable>(
-          {String url,
-          ResponseType type,
-          NetworkListener listener,
-          ContentType contentType,
-          Iterable<Header> headers,
-          Duration timeout,
-          bool isParse = false}) {
-    return GenericRequestObject<Null, ResponseType>(
-            MethodType.GET, learning, config)
+  GenericRequestObject<ResponseType> get<ResponseType extends Serializable>(
+      {String url,
+      ResponseType type,
+      NetworkListener listener,
+      ContentType contentType,
+      Iterable<Header> headers,
+      Duration timeout,
+      bool isParse = false}) {
+    return GenericRequestObject<ResponseType>(MethodType.GET, learning, config)
         .url(url)
         .type(type)
         .listener(listener)
@@ -34,7 +32,7 @@ class NetworkManager {
         .isParse(isParse);
   }
 
-  GenericRequestObject<RequestType, ResponseType>
+  GenericRequestObject<ResponseType>
       post<RequestType extends Serializable, ResponseType extends Serializable>(
           {String url,
           dynamic body,
@@ -44,8 +42,7 @@ class NetworkManager {
           Iterable<Header> headers,
           Duration timeout,
           bool isParse = false}) {
-    return GenericRequestObject<RequestType, ResponseType>(
-            MethodType.POST, learning, body)
+    return GenericRequestObject<ResponseType>(MethodType.POST, learning, body)
         .url(url)
         .type(type)
         .listener(listener)
@@ -55,7 +52,7 @@ class NetworkManager {
         .isParse(isParse);
   }
 
-  GenericRequestObject<RequestType, ResponseType>
+  GenericRequestObject<ResponseType>
       put<RequestType extends Serializable, ResponseType extends Serializable>(
           {String url,
           dynamic body,
@@ -65,7 +62,7 @@ class NetworkManager {
           Iterable<Header> headers,
           Duration timeout,
           bool isParse = false}) {
-    return GenericRequestObject<RequestType, ResponseType>(
+    return GenericRequestObject<ResponseType>(
             MethodType.PUT, learning, config, body)
         .url(url)
         .type(type)
@@ -76,14 +73,14 @@ class NetworkManager {
         .isParse(isParse);
   }
 
-  GenericRequestObject<RequestType, ResponseType> delete<
-          RequestType extends Serializable, ResponseType extends Serializable>(
+  GenericRequestObject<ResponseType> delete<RequestType extends Serializable,
+          ResponseType extends Serializable>(
       {String url,
       ResponseType type,
       Iterable<Header> headers,
       Duration timeout,
       bool isParse = false}) {
-    return GenericRequestObject<RequestType, ResponseType>(
+    return GenericRequestObject<ResponseType>(
             MethodType.DELETE, learning, config)
         .url(url)
         .type(type)
