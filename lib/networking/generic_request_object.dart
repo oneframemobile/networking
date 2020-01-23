@@ -169,10 +169,10 @@ class GenericRequestObject<ResponseType extends Serializable> {
               ? ContentType.json.toString()
               : _contentType.toString(),
         );
-        // request.headers.add("content-type", "application/json; charset=utf-8");
         if (_body != null) {
           var model = json.encode(_body);
-          // request body parser
+          request.headers.contentLength = model.length;
+
           if (_body is List) {
             if (_body.first is SerializableObject) {
               var mapList = _body
@@ -187,7 +187,6 @@ class GenericRequestObject<ResponseType extends Serializable> {
           } else {
             request.write(model);
           }
-          request.headers.add("Content-Length", model.length);
         }
       }
 
