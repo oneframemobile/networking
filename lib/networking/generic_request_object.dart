@@ -167,9 +167,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
           HttpHeaders.contentTypeHeader,
           _contentType == null
               ? ContentType.json.toString()
-              : _contentType.toString(),
+              : _contentType.toString() + ";charset=utf-8",
         );
-
+        // request.headers.add("content-type", "application/json; charset=utf-8");
         if (_body != null) {
           // request body parser
           if (_body is List) {
