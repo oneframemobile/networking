@@ -136,19 +136,19 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  Future<HttpClientRequest> _request() {
+  Future<HttpClientRequest> _request() async {
     final client = HttpClient();
     switch (_methodType) {
       case MethodType.GET:
-        return client.getUrl(_uri);
+        return await client.getUrl(_uri);
       case MethodType.POST:
-        return client.postUrl(_uri);
+        return await client.postUrl(_uri);
       case MethodType.PUT:
-        return client.putUrl(_uri);
+        return await client.putUrl(_uri);
       case MethodType.DELETE:
-        return client.deleteUrl(_uri);
+        return await client.deleteUrl(_uri);
       case MethodType.UPDATE:
-        return client.patchUrl(_uri);
+        return await client.patchUrl(_uri);
     }
 
     throw new Exception("Unknown method type");
