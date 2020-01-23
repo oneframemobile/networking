@@ -167,10 +167,11 @@ class GenericRequestObject<ResponseType extends Serializable> {
           HttpHeaders.contentTypeHeader,
           _contentType == null
               ? ContentType.json.toString()
-              : _contentType.toString() + ";charset=utf-8",
+              : _contentType.toString(),
         );
         // request.headers.add("content-type", "application/json; charset=utf-8");
         if (_body != null) {
+          var model = json.encode(_body);
           // request body parser
           if (_body is List) {
             if (_body.first is SerializableObject) {
@@ -183,13 +184,10 @@ class GenericRequestObject<ResponseType extends Serializable> {
               throw ErrorDescription(
                   "Body list param does not have serializable object");
             }
-          } else if (_body is SerializableObject) {
-            SerializableObject serializable = _body as SerializableObject;
-            var map = json.encode(serializable.toJson());
-            request.write(map);
           } else {
-            request.write(json.encode(_body));
+            request.write(model);
           }
+          request.headers.add("Content-Length", model.length);
         }
       }
 
