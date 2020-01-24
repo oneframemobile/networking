@@ -171,7 +171,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
         );
         if (_body != null) {
           var model = json.encode(_body);
-          request.headers.contentLength = model.length;
+          var utf8Length = utf8.encode(model).length;
+
+          request.headers.contentLength = utf8Length;
 
           if (_body is List) {
             if (_body.first is SerializableObject) {
