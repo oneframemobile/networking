@@ -15,7 +15,7 @@ void main() {
 
     _manager = NetworkingFactory.create();
     await _manager
-        .post<RegisterRequest, RegisterResponse, ReqResInError>(
+        .post<RegisterRequest, RegisterResponse>(
             url: "https://reqres.in/api",
             body: request,
             type: new RegisterResponse(),
@@ -35,7 +35,7 @@ void main() {
   test('timeout method', () async {
     _manager = NetworkingFactory.create();
     await _manager
-        .get<NoResponse, NoResponse>(
+        .get<NoResponse>(
             url: "https://httpstat.us/200?sleep=5000",
             type: new NoResponse(),
             timeout: new Duration(),

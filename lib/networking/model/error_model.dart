@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import '../generic_request_object.dart';
 
 class ErrorModel<T> {

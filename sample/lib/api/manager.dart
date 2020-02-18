@@ -9,6 +9,7 @@ class ApiManager {
   ApiManager._apiManager() {
     NetworkConfig _config = NetworkConfig();
     _config.setBaseUrl("https://hwasampleapi.firebaseio.com/");
+    _config.addHeaderWithParameters("token", "EXAMPLE_TOKEN");
     if (_manager == null) _manager = NetworkingFactory.create(config: _config);
   }
   static ApiManager get getInstance => instance;

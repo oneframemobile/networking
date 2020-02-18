@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:networking/networking.dart';
 
 import 'learning/firebase_learning.dart';
@@ -14,19 +13,27 @@ void main() {
     NetworkConfig _config = NetworkConfig();
 
     _config.setBaseUrl("https://swaggercodegen.firebaseio.com/");
-  
+
     manager =
         NetworkingFactory.create(config: _config, learning: FirebaseLearning());
   });
 
   test('firebase user list', () async {
+    var response = (await manager.get(url: "users.json", type: User()).fetch());
+
+    print(response);
+
+    expect(response.data.length > 0, true);
+  });
+
+  test('firebase user list', () async {
     var response = (await manager
-        .get(url: "users.json", asList: true, type: UserList())
-        .fetch()) as ResultModel<UserList>;
+        .get(url: "vb.json", type: User(), isParse: true)
+        .fetch());
 
-    print(response.data.list);
+    print(response.data);
 
-    expect(response.data.list.length > 0, true);
+    expect(response.data.length > 0, true);
   });
 
   test('firebase add post user', () async {
@@ -44,10 +51,10 @@ void main() {
     var user =
         User(identity: "asd", name: "vv", surname: "asdasd", userID: "1234");
 
-    var responseUserList = (await manager
-        .get(url: "users.json", asList: true, type: UserList())
-        .fetch()) as ResultModel<UserList>;
-    final lastIndex = responseUserList.data.list.length;
+    var responseUserList =
+        (await manager.get(url: "users.json", type: User()).fetch());
+
+    final lastIndex = responseUserList.data.length;
 
     var response = (await manager
         .put(url: "users/$lastIndex.json", body: user, type: NoPayload())
@@ -57,9 +64,8 @@ void main() {
   });
 
   test('firebase delete  user', () async {
-    var responseUserList = (await manager
-        .get(url: "users.json", asList: true, type: UserList())
-        .fetch()) as ResultModel<UserList>;
+    var responseUserList =
+        (await manager.get(url: "users.json", type: User()).fetch());
     final lastIndex = responseUserList.data.list.length - 1;
 
     var response = (await manager
@@ -82,8 +88,8 @@ void main() {
     var response = (await manager.get(url: ".json", type: Complex()).fetch())
         as ResultModel;
 
-    int statusParse =
-        resolve(json: response.json, path: "code", defaultValue: 10);
+    // int statusParse =
+    //     resolve(json: response.json, path: "code", defaultValue: 10);
     List<Users> usesrList = resolve(
             json: response.json, path: "users", defaultValue: List<dynamic>())
         .cast<Users>()

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:networking/networking.dart';
 import 'package:sample/api/podo/my_learning.dart';
-import 'package:sample/api/podo/post_response.dart';
 import 'package:sample/api/podo/register_request.dart';
 import 'package:sample/api/podo/register_response.dart';
 import 'package:sample/api/reqresin_error.dart';
@@ -49,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       NetworkingFactory.init();
       NetworkManager manager = NetworkingFactory.create(learning: learning);
       manager
-          .post<RegisterRequest, RegisterResponse, ReqResInError>(
+          .post<RegisterRequest, RegisterResponse>(
               url: "https://reqres.in/api/register",
               body: request,
               type: new RegisterResponse(),
