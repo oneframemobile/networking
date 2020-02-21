@@ -138,6 +138,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
   Future<HttpClientRequest> _request() async {
     final client = HttpClient();
+    client.connectionTimeout = _config.timeout;
     switch (_methodType) {
       case MethodType.GET:
         return await client.getUrl(_uri);

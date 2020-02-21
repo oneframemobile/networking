@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sample/api/manager.dart';
+
+import 'api/manager.dart';
 
 class StarforceView extends StatefulWidget {
   @override
