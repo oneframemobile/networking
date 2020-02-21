@@ -263,6 +263,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
       return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR);
     } on TimeoutException catch (exception) {
       return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
+    } catch (exception) {
+      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
     }
   }
 
