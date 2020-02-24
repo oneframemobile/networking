@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'header.dart';
 import 'model/error_model.dart';
@@ -30,6 +31,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
   ResponseType _type;
   Set<Cookie> _cookies;
   bool _isParse;
+  bool _enableCache;
+  String _key;
 
   final RequestId id = new RequestId();
 
@@ -47,6 +50,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
   GenericRequestObject<ResponseType> url(String url) {
     _uri = Uri.parse(_config != null ? _config.baseUrl + url : url);
+    _key = _uri.toString();
     return this;
   }
 
@@ -85,6 +89,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
+  @Deprecated("Use query instead")
   GenericRequestObject<ResponseType> addQuery(String key, String value) {
     if (_uri.toString().contains("?")) {
       _uri = Uri.parse(_uri.toString() + "&$key=$value");
@@ -127,12 +132,19 @@ class GenericRequestObject<ResponseType extends Serializable> {
   }
 
   GenericRequestObject<ResponseType> query(String key, String value) {
-    _uri = Uri.parse(_uri.toString() + "?$key=$value");
+    var old = _uri.toString();
+    var prefix = old.contains("?") ? "&" : "?";
+    _uri = Uri.parse("$old$prefix$key=$value");
     return this;
   }
 
   GenericRequestObject<ResponseType> path(String path) {
     _uri = Uri.parse(_uri.toString() + "/$path");
+    return this;
+  }
+
+  GenericRequestObject<ResponseType> cache(bool enabled) {
+    _enableCache = enabled;
     return this;
   }
 
@@ -192,16 +204,19 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
 
-      var response = await request.close();
-      response.timeout(_config != null ? _config.timeout : _timeout);
+      var response = await request.close().timeout(
+          _config != null
+              ? _config.timeout
+              : _timeout == null ? Duration(minutes: 1) : _timeout,
+          onTimeout: () {
+        throw TimeoutException("Timeout");
+      });
       var buffer = new StringBuffer();
-
       var bytes = await consolidateHttpClientResponseBytes(response);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         ResultModel model = ResultModel();
         model.url = _uri.toString();
-        // check cookkies
         if (response.cookies != null) {
           model.cookies = response.cookies;
         }
@@ -214,11 +229,15 @@ class GenericRequestObject<ResponseType extends Serializable> {
           }
 
           buffer.write(String.fromCharCodes(bytes));
-          // check empty or return single value
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result);
             model.jsonString = buffer.toString();
             var serializable = (_type as SerializableObject);
+
+            if (_enableCache) {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setString(_key, model.jsonString);
+            }
 
             if (body is List)
               model.data = body
@@ -259,6 +278,41 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
     } on SocketException catch (exception) {
+      if (_enableCache) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var has = prefs.containsKey(_key);
+        if (has) {
+          var cached = prefs.getString(_key);
+          ResultModel model = ResultModel();
+          model.jsonString = cached;
+          model.url = _uri.toString();
+
+          if (_isParse) {
+            return _learning.checkSuccess<ResponseType>(_listener, model);
+          }
+
+          var body = json.decode(cached);
+          var serializable = (_type as SerializableObject);
+
+          if (body is List)
+            model.data = body
+                .map((data) => serializable.fromJson(data))
+                .cast<ResponseType>()
+                .toList();
+          else if (body is Map)
+            model.data = serializable.fromJson(body) as ResponseType;
+          else
+            model.data = body;
+
+          if (_learning != null)
+            return _learning.checkSuccess<ResponseType>(_listener, model);
+          else {
+            _listener?.result(model);
+            return model;
+          }
+        }
+      }
+
       return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR);
     } on TimeoutException catch (exception) {
       return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
