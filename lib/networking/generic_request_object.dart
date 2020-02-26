@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'header.dart';
 import 'model/error_model.dart';
@@ -31,8 +31,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
   ResponseType _type;
   Set<Cookie> _cookies;
   bool _isParse;
-  bool _enableCache;
-  String _key;
+  bool _cacheEnabled = false;
+  Duration _cacheDuration;
 
   final RequestId id = new RequestId();
 
@@ -50,7 +50,6 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
   GenericRequestObject<ResponseType> url(String url) {
     _uri = Uri.parse(_config != null ? _config.baseUrl + url : url);
-    _key = _uri.toString();
     return this;
   }
 
@@ -99,8 +98,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> addHeaderWithParameters(
-      String key, String value) {
+  GenericRequestObject<ResponseType> addHeaderWithParameters(String key, String value) {
     var header = new Header(key, value);
     _headers.add(header);
     return this;
@@ -143,8 +141,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> cache(bool enabled) {
-    _enableCache = enabled;
+  GenericRequestObject<ResponseType> cache(bool enabled, Duration duration) {
+    _cacheEnabled = enabled;
+    _cacheDuration = duration;
     return this;
   }
 
@@ -171,15 +170,12 @@ class GenericRequestObject<ResponseType extends Serializable> {
       var request = await _request();
 
       _cookies?.forEach((cookie) => request.cookies.add(cookie));
-      _headers
-          .forEach((header) => request.headers.add(header.key, header.value));
+      _headers.forEach((header) => request.headers.add(header.key, header.value));
 
       if (_methodType == MethodType.POST || _methodType == MethodType.PUT) {
         request.headers.add(
           HttpHeaders.contentTypeHeader,
-          _contentType == null
-              ? ContentType.json.toString()
-              : _contentType.toString(),
+          _contentType == null ? ContentType.json.toString() : _contentType.toString(),
         );
         if (_body != null) {
           var model = json.encode(_body);
@@ -189,14 +185,11 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
           if (_body is List) {
             if (_body.first is SerializableObject) {
-              var mapList = _body
-                  .map((SerializableObject item) => item.toJson())
-                  .toList();
+              var mapList = _body.map((SerializableObject item) => item.toJson()).toList();
               var jsonMapList = json.encode(mapList);
               request.write(jsonMapList);
             } else {
-              throw ErrorDescription(
-                  "Body list param does not have serializable object");
+              throw ErrorDescription("Body list param does not have serializable object");
             }
           } else {
             request.write(model);
@@ -204,11 +197,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
 
-      var response = await request.close().timeout(
-          _config != null
-              ? _config.timeout
-              : _timeout == null ? Duration(minutes: 1) : _timeout,
-          onTimeout: () {
+      var response = await request.close().timeout(_config != null ? _config.timeout : _timeout == null ? Duration(minutes: 1) : _timeout, onTimeout: () {
         throw TimeoutException("Timeout");
       });
       var buffer = new StringBuffer();
@@ -234,16 +223,17 @@ class GenericRequestObject<ResponseType extends Serializable> {
             model.jsonString = buffer.toString();
             var serializable = (_type as SerializableObject);
 
-            if (_enableCache) {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.setString(_key, model.jsonString);
+            if (_cacheEnabled) {
+              DefaultCacheManager cache = DefaultCacheManager();
+              File cached = await cache.putFile(
+                model.url,
+                model.bodyBytes,
+                maxAge: _cacheDuration == null ? const Duration(days: 30) : _cacheDuration,
+              );
             }
 
             if (body is List)
-              model.data = body
-                  .map((data) => serializable.fromJson(data))
-                  .cast<ResponseType>()
-                  .toList();
+              model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
             else if (body is Map)
               model.data = serializable.fromJson(body) as ResponseType;
             else
@@ -295,10 +285,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
           var serializable = (_type as SerializableObject);
 
           if (body is List)
-            model.data = body
-                .map((data) => serializable.fromJson(data))
-                .cast<ResponseType>()
-                .toList();
+            model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
           else if (body is Map)
             model.data = serializable.fromJson(body) as ResponseType;
           else
@@ -320,10 +307,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
   }
 
   List fromJsonList(List json, dynamic model) {
-    return json
-        .map((fields) => model.fromJson(fields))
-        .cast<ResponseType>()
-        .toList();
+    return json.map((fields) => model.fromJson(fields)).cast<ResponseType>().toList();
   }
 
   void customErrorHandler(exception, NetworkErrorTypes types) {
@@ -345,11 +329,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GenericRequestObject &&
-          runtimeType == other.runtimeType &&
-          id == other.id;
+  bool operator ==(Object other) => identical(this, other) || other is GenericRequestObject && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
