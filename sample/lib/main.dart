@@ -3,7 +3,6 @@ import 'package:networking/networking.dart';
 import 'package:sample/api/podo/my_learning.dart';
 import 'package:sample/api/podo/register_request.dart';
 import 'package:sample/api/podo/register_response.dart';
-import 'package:sample/api/reqresin_error.dart';
 import 'package:sample/starforce.dart';
 
 void main() {
@@ -55,10 +54,16 @@ class _MyHomePageState extends State<MyHomePage> {
               listener: new NetworkListener()
                 ..onSuccess((result) {
                   print("success");
+                  cacheTest(manager, request);
                 })
                 ..onError((error) {
                   print("fail");
                 }))
+          .cache(
+            enabled: true,
+            key: "hello",
+            duration: Duration(minutes: 1),
+          )
           .fetch()
             ..then((asd) {
               print("aa");
@@ -80,6 +85,32 @@ class _MyHomePageState extends State<MyHomePage> {
 //                }))
 //          .enqueue();
     });
+  }
+
+  void cacheTest(NetworkManager manager, dynamic request) {
+    manager
+        .post<RegisterRequest, RegisterResponse>(
+            url: "https://reqres.in/api/register",
+            body: request,
+            type: new RegisterResponse(),
+            listener: new NetworkListener()
+              ..onSuccess((result) {
+                print("success");
+              })
+              ..onError((error) {
+                print("fail");
+              }))
+        .cache(
+          enabled: true,
+          key: "hello",
+          duration: Duration(minutes: 1),
+        )
+        .fetch()
+          ..then((asd) {
+            print("aa");
+          }).catchError((error) {
+            print("bb");
+          });
   }
 
   @override

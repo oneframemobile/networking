@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:networking/networking/network_cache.dart';
 
 import 'header.dart';
 import 'model/error_model.dart';
@@ -31,6 +32,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
   ResponseType _type;
   Set<Cookie> _cookies;
   bool _isParse;
+
+  String _cacheKey;
   bool _cacheEnabled = false;
   Duration _cacheDuration;
 
@@ -141,9 +144,10 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> cache(bool enabled, Duration duration) {
+  GenericRequestObject<ResponseType> cache({bool enabled, String key, Duration duration}) {
     _cacheEnabled = enabled;
     _cacheDuration = duration;
+    _cacheKey = key;
     return this;
   }
 
@@ -197,6 +201,17 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
 
+      if (_cacheEnabled && _cacheDuration != null) {
+        return NetworkCache().read<ResponseType>(
+          key: _cacheKey,
+          uri: _uri,
+          isParse: _isParse,
+          learning: _learning,
+          listener: _listener,
+          type: _type,
+        );
+      }
+
       var response = await request.close().timeout(_config != null ? _config.timeout : _timeout == null ? Duration(minutes: 1) : _timeout, onTimeout: () {
         throw TimeoutException("Timeout");
       });
@@ -226,8 +241,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
             if (_cacheEnabled) {
               DefaultCacheManager cache = DefaultCacheManager();
               File cached = await cache.putFile(
-                model.url,
-                model.bodyBytes,
+                _cacheKey,
+                bytes,
                 maxAge: _cacheDuration == null ? const Duration(days: 30) : _cacheDuration,
               );
             }
@@ -268,36 +283,15 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
     } on SocketException catch (exception) {
-      if (_enableCache) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var has = prefs.containsKey(_key);
-        if (has) {
-          var cached = prefs.getString(_key);
-          ResultModel model = ResultModel();
-          model.jsonString = cached;
-          model.url = _uri.toString();
-
-          if (_isParse) {
-            return _learning.checkSuccess<ResponseType>(_listener, model);
-          }
-
-          var body = json.decode(cached);
-          var serializable = (_type as SerializableObject);
-
-          if (body is List)
-            model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
-          else if (body is Map)
-            model.data = serializable.fromJson(body) as ResponseType;
-          else
-            model.data = body;
-
-          if (_learning != null)
-            return _learning.checkSuccess<ResponseType>(_listener, model);
-          else {
-            _listener?.result(model);
-            return model;
-          }
-        }
+      if (_cacheEnabled) {
+        return NetworkCache().read<ResponseType>(
+          key: _cacheKey,
+          uri: _uri,
+          isParse: _isParse,
+          learning: _learning,
+          listener: _listener,
+          type: _type,
+        );
       }
 
       return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR);
