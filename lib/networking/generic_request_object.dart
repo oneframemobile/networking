@@ -156,9 +156,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
   }
 
   Future<dynamic> fetch() async {
+    var request = await _request();
     try {
-      var request = await _request();
-
       _cookies?.forEach((cookie) => request.cookies.add(cookie));
       _headers
           .forEach((header) => request.headers.add(header.key, header.value));
@@ -246,6 +245,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
           return model;
         }
       } else {
+        await request.done;
         ErrorModel error = ErrorModel();
         error.description = response.reasonPhrase;
         error.statusCode = response.statusCode;
@@ -260,11 +260,14 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
     } on SocketException catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR);
+      return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR,
+          request: request);
     } on TimeoutException catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
+      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
+          request: request);
     } catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
+      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
+          request: request);
     }
   }
 
@@ -275,7 +278,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
         .toList();
   }
 
-  void customErrorHandler(exception, NetworkErrorTypes types) {
+  Future<void> customErrorHandler(exception, NetworkErrorTypes types,
+      {HttpClientRequest request}) async {
+    await request?.done;
     ErrorModel error = ErrorModel();
     error.description = exception.message;
     error.type = types;
