@@ -31,6 +31,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
   ResponseType _type;
   Set<Cookie> _cookies;
   bool _isParse;
+  String body;
 
   String _cacheKey;
   bool _cacheEnabled = false;
@@ -180,7 +181,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
           HttpHeaders.contentTypeHeader,
           _contentType == null ? ContentType.json.toString() : _contentType.toString(),
         );
-        if (_body != null) {
+        if (_body != null && body == null) {
           var model = json.encode(_body);
           var utf8Length = utf8.encode(model).length;
 
@@ -191,12 +192,16 @@ class GenericRequestObject<ResponseType extends Serializable> {
               var mapList = _body.map((SerializableObject item) => item.toJson()).toList();
               var jsonMapList = json.encode(mapList);
               request.write(jsonMapList);
+              body = jsonMapList;
             } else {
               throw ErrorDescription("Body list param does not have serializable object");
             }
           } else {
-            request.write(model);
+            body = model;
+            request.write(body);
           }
+        } else if (body.isNotEmpty) {
+          request.write(body);
         }
       }
 
@@ -279,7 +284,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
         error.request = this;
 
         if (_learning != null)
-          return await _learning.checkCustomError(_listener, error);
+          return _learning.checkCustomError(_listener, error);
         else {
           _listener?.error(error);
           throw (error);
@@ -319,7 +324,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
     _listener?.error(error);
 
     if (_learning != null)
-      return _learning.checkCustomError(_listener, error);
+      return await _learning.checkCustomError(_listener, error);
     else
       throw (error);
   }
