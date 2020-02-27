@@ -10,6 +10,5 @@ export 'networking/network_listener.dart';
 export 'networking/network_manager.dart';
 export 'networking/networking_factory.dart';
 export 'networking/serializable_object.dart';
-export 'networking/serializable_list.dart';
 export 'networking/no_payload.dart';
 export 'networking/request_id.dart';

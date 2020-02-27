@@ -3,7 +3,7 @@ import 'package:networking/networking/model/result_model.dart';
 import 'package:networking/networking/network_learning.dart';
 import 'package:networking/networking/network_listener.dart';
 
-class FirebaseLearning extends NetworkLearning {
+class LocalhostLearning extends NetworkLearning {
   @override
   checkCustomError(NetworkListener listener, ErrorModel error) async {
     // await error.request.fetch();

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:networking/networking.dart';
-import 'package:sample/api/podo/my_learning.dart';
-import 'package:sample/api/podo/post_response.dart';
-import 'package:sample/api/podo/register_request.dart';
-import 'package:sample/api/podo/register_response.dart';
-import 'package:sample/api/reqresin_error.dart';
-import 'package:sample/starforce.dart';
+
+import 'api/podo/register_request.dart';
+import 'starforce.dart';
 
 void main() {
   NetworkingFactory.init();
@@ -48,66 +44,69 @@ class _MyHomePageState extends State<MyHomePage> {
       MyLearning learning = new MyLearning();
       NetworkingFactory.init();
       NetworkManager manager = NetworkingFactory.create(learning: learning);
-      manager
-          .post<RegisterRequest, RegisterResponse, ReqResInError>(
-              url: "https://reqres.in/api/register",
-              body: request,
-              type: new RegisterResponse(),
-              listener: new NetworkListener()
-                ..onSuccess((result) {
-                  print("success");
-                })
-                ..onError((error) {
-                  print("fail");
-                }))
-          .fetch()
-            ..then((asd) {
-              print("aa");
-            }).catchError((error) {
-              print("bb");
-            });
-
-//      manager
-//          .get<PostResponse, ReqResInError>(
-//              url: "https://jsonplaceholder.typicode.com/posts",
-//              type: new PostResponse(),
-//              asList: true,
-//              listener: new NetworkListener()
-//                ..onSuccess((result) {
-//                  print("hello");
-//                })
-//                ..onError((error) {
-//                  print("world");
-//                }))
-//          .enqueue();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            manager
+                .post<RegisterRequest, RegisterResponse>(
+                    url: "https://reqres.in/api/register",
+                    body: request,
+                    type: new RegisterResponse(),
+                    listener: new NetworkListener()
+                      ..onSuccess((result) {
+                        print("success");
+                      })
+                      ..onError((error) {
+                        print("fail");
+                      }))
+                .fetch()
+                  ..then((asd) {
+                    print("aa");
+                  }).catchError((error) {
+                    print("bb");
+                  });
+      
+      //      manager
+      //          .get<PostResponse, ReqResInError>(
+      //              url: "https://jsonplaceholder.typicode.com/posts",
+      //              type: new PostResponse(),
+      //              asList: true,
+      //              listener: new NetworkListener()
+      //                ..onSuccess((result) {
+      //                  print("hello");
+      //                })
+      //                ..onError((error) {
+      //                  print("world");
+      //                }))
+      //          .enqueue();
+          });
+        }
+      
+        @override
+        Widget build(BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'You have pushed the button this many times:',
+                  ),
+                  Text(
+                    '$_counter',
+                    style: Theme.of(context).textTheme.display1,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
-    );
-  }
+            floatingActionButton: FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              child: Icon(Icons.add),
+            ),
+          );
+        }
+      }
+      
+      class NetworkManager {
 }

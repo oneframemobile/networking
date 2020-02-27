@@ -2,12 +2,10 @@ import 'package:networking/networking.dart';
 
 class MyLearning extends NetworkLearning {
   @override
-  checkCustomError(NetworkListener listener, ErrorModel error) {
-    // TODO: implement checkCustomError
-  }
+  checkCustomError(NetworkListener listener, ErrorModel error) {}
 
   @override
-  checkSuccess(NetworkListener listener, ResultModel result) {
+  checkSuccess<T>(NetworkListener listener, ResultModel result) {
     try {
       var data = result.data as dynamic;
       if (data.errorMessage == null) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sample/api/manager.dart';
+
+import 'api/manager.dart';
 
 class StarforceView extends StatefulWidget {
   @override
@@ -22,13 +23,13 @@ class _StarforceViewState extends State<StarforceView> {
   }
 
   Widget get _appbar => AppBar(
-        title: Text("StartForce Networking Sample"),
+        title: Text("StarForce Networking Sample"),
       );
 
   Widget get _deleteRequest => RaisedButton.icon(
         icon: Icon(Icons.delete),
         onPressed: () async {
-          await _apiManager .deleteFirebaseChild(child: "sample");
+          await _apiManager.deleteFirebaseChild(child: "sample");
         },
         label: Text("Try Networking DELETE Request"),
       );
