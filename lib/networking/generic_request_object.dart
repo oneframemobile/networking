@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:networking/networking/model/network_cache_options.dart';
 import 'package:networking/networking/network_cache.dart';
 
 import 'header.dart';
@@ -32,10 +33,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
   Set<Cookie> _cookies;
   bool _isParse;
   String body;
-
-  String _cacheKey;
-  bool _cacheEnabled = false;
-  Duration _cacheDuration;
+  NetworkCacheOptions _cacheOptions;
 
   final RequestId id = new RequestId();
 
@@ -144,10 +142,13 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> cache({bool enabled, String key, Duration duration}) {
-    _cacheEnabled = enabled;
-    _cacheDuration = duration;
-    _cacheKey = key;
+  GenericRequestObject<ResponseType> cache({bool enabled, String key, Duration duration, bool recoverFromException}) {
+    _cacheOptions = NetworkCacheOptions(
+      enabled: enabled,
+      key: key,
+      duration: duration,
+      recoverFromException: recoverFromException,
+    );
     return this;
   }
 
@@ -205,9 +206,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
 
-      if (_cacheEnabled && _cacheDuration != null) {
+      if (_cacheOptions != null && _cacheOptions.enabled != null) {
         return NetworkCache().read<ResponseType>(
-          key: _cacheKey,
+          key: _cacheOptions.key,
           uri: _uri,
           isParse: _isParse,
           learning: _learning,
@@ -222,14 +223,14 @@ class GenericRequestObject<ResponseType extends Serializable> {
           throw TimeoutException("Timeout");
         },
       );
-      var buffer = new StringBuffer();
 
+      var buffer = new StringBuffer();
       var bytes = await consolidateHttpClientResponseBytes(response);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         ResultModel model = ResultModel();
         model.url = _uri.toString();
-        // check cookkies
+
         if (response.cookies != null) {
           model.cookies = response.cookies;
         }
@@ -242,16 +243,15 @@ class GenericRequestObject<ResponseType extends Serializable> {
           }
 
           buffer.write(String.fromCharCodes(bytes));
-          // check empty or return single value
+
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result);
             model.jsonString = buffer.toString();
             var serializable = (_type as SerializableObject);
 
-            if (_cacheEnabled) {
+            if (_cacheOptions != null && _cacheOptions.enabled) {
               NetworkCache cache = NetworkCache();
-              cache.save(key: _cacheKey, bytes: bytes, duration: _cacheDuration);
-              var deneme = 5;
+              cache.save(key: _cacheOptions.key, bytes: bytes, duration: _cacheOptions.duration);
             }
 
             if (body is List)
@@ -291,9 +291,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
     } on SocketException catch (exception) {
-      if (_cacheEnabled) {
+      if (_cacheOptions != null && _cacheOptions.enabled && _cacheOptions.recoverFromException) {
         return NetworkCache().read<ResponseType>(
-          key: _cacheKey,
+          key: _cacheOptions.key,
           uri: _uri,
           isParse: _isParse,
           learning: _learning,
