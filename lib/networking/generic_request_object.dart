@@ -256,9 +256,9 @@ class GenericRequestObject<RequestType extends Serializable,
         error.statusCode = response.statusCode;
         error.raw = buffer.toString();
         error.request = this;
-        
+
         if (_learning != null)
-          return await _learning.checkCustomError(_listener, error);
+          return _learning.checkCustomError(_listener, error);
         else {
           if (_listener != null) _listener.error(error);
           return Future.error(error);
