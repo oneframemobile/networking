@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:networking/networking.dart';
@@ -14,11 +15,11 @@ class NetworkCache {
     ResponseType type,
   }) async {
     DefaultCacheManager cache = DefaultCacheManager();
-    File cached = await cache.getSingleFile(key);
+    FileInfo cached = await cache.getFileFromCache(key);
     if (cached != null) {
       ResultModel model = ResultModel();
-      model.result = cached.readAsStringSync();
-      model.bodyBytes = cached.readAsBytesSync();
+      model.result = cached.file.readAsStringSync();
+      model.bodyBytes = cached.file.readAsBytesSync();
       model.json = json.decode(model.result);
       model.url = uri.toString();
 
@@ -42,5 +43,23 @@ class NetworkCache {
         return model;
       }
     }
+  }
+
+  Future<dynamic> save({
+    String key,
+    Uint8List bytes,
+    Duration duration,
+  }) async {
+    DefaultCacheManager cache = DefaultCacheManager();
+    File cached = await cache.putFile(
+      key,
+      bytes,
+      maxAge: duration == null ? const Duration(days: 30) : duration,
+    );
+  }
+
+  clear() {
+    DefaultCacheManager cache = DefaultCacheManager();
+    cache.emptyCache();
   }
 }
