@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .cache(
             enabled: true,
             key: "hello",
+            duration: Duration(minutes: 5),
           )
           .fetch()
             ..then((asd) {

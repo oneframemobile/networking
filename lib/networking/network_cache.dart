@@ -4,8 +4,21 @@ import 'dart:typed_data';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:networking/networking.dart';
+import 'package:networking/networking/model/network_cache_options.dart';
 
 class NetworkCache {
+  NetworkCacheOptions options;
+
+  NetworkCache() {
+    options = NetworkCacheOptions();
+  }
+
+  Future<bool> has() async {
+    DefaultCacheManager cache = DefaultCacheManager();
+    FileInfo cached = await cache.getFileFromCache(options.key);
+    return cached != null;
+  }
+
   Future<dynamic> read<ResponseType>({
     String key,
     Uri uri,

@@ -33,7 +33,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
   Set<Cookie> _cookies;
   bool _isParse;
   String body;
-  NetworkCacheOptions _cacheOptions;
+  NetworkCache _cache;
 
   final RequestId id = new RequestId();
 
@@ -206,9 +206,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
 
-      if (_cacheOptions != null && _cacheOptions.enabled != null) {
+      if (_cache != null && _cache.options.enabled && await _cache.has()) {
         return NetworkCache().read<ResponseType>(
-          key: _cacheOptions.key,
+          key: _cache.options.key,
           uri: _uri,
           isParse: _isParse,
           learning: _learning,
@@ -249,9 +249,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
             model.jsonString = buffer.toString();
             var serializable = (_type as SerializableObject);
 
-            if (_cacheOptions != null && _cacheOptions.enabled) {
+            if (_cache != null && _cache.options.enabled) {
               NetworkCache cache = NetworkCache();
-              cache.save(key: _cacheOptions.key, bytes: bytes, duration: _cacheOptions.duration);
+              cache.save(key: _cache.options.key, bytes: bytes, duration: _cache.options.duration);
             }
 
             if (body is List)
@@ -291,9 +291,9 @@ class GenericRequestObject<ResponseType extends Serializable> {
         }
       }
     } on SocketException catch (exception) {
-      if (_cacheOptions != null && _cacheOptions.enabled && _cacheOptions.recoverFromException) {
+      if (_cache != null && _cache.options.enabled && _cache.options.recoverFromException) {
         return NetworkCache().read<ResponseType>(
-          key: _cacheOptions.key,
+          key: _cache.options.key,
           uri: _uri,
           isParse: _isParse,
           learning: _learning,
