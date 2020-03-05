@@ -71,8 +71,13 @@ class NetworkCache {
     );
   }
 
-  clear() {
+  clearAll() {
     DefaultCacheManager cache = DefaultCacheManager();
     cache.emptyCache();
+  }
+
+  clear({String key}) {
+    DefaultCacheManager cache = DefaultCacheManager();
+    cache.removeFile(key);
   }
 }

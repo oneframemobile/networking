@@ -142,19 +142,21 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> cache({bool enabled, String key, Duration duration, bool recoverFromException}) {
-    _cacheOptions = NetworkCacheOptions(
+  GenericRequestObject<ResponseType> cache({bool enabled, @required String key, Duration duration, bool recoverFromException}) {
+    _cache = NetworkCache();
+    _cache.options = NetworkCacheOptions(
       enabled: enabled,
       key: key,
       duration: duration,
       recoverFromException: recoverFromException,
     );
+
     return this;
   }
 
   Future<HttpClientRequest> _request() async {
     final client = HttpClient();
-    client.connectionTimeout = _config.timeout;
+    client.connectionTimeout = _config == null ? Duration(minutes: 1) : _config.timeout;
     switch (_methodType) {
       case MethodType.GET:
         return await client.getUrl(_uri);
