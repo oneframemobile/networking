@@ -204,6 +204,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
             request.write(body);
           }
         } else if (body.isNotEmpty) {
+          request.headers.contentLength = utf8.encode(body).length;
           request.write(body);
         }
       }
