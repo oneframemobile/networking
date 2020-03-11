@@ -142,13 +142,20 @@ class GenericRequestObject<ResponseType extends Serializable> {
     return this;
   }
 
-  GenericRequestObject<ResponseType> cache({bool enabled, @required String key, Duration duration, bool recoverFromException}) {
+  GenericRequestObject<ResponseType> cache({
+    bool enabled,
+    @required String key,
+    Duration duration,
+    bool recoverFromException,
+    bool encrypted,
+  }) {
     _cache = NetworkCache();
     _cache.options = NetworkCacheOptions(
       enabled: enabled,
       key: key,
       duration: duration,
       recoverFromException: recoverFromException,
+      encrypted: encrypted,
     );
 
     return this;
@@ -210,8 +217,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
       }
 
       if (_cache != null && _cache.options.enabled && await _cache.has()) {
-        return NetworkCache().read<ResponseType>(
-          key: _cache.options.key,
+        return _cache.read<ResponseType>(
           uri: _uri,
           isParse: _isParse,
           learning: _learning,
@@ -253,8 +259,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
             var serializable = (_type as SerializableObject);
 
             if (_cache != null && _cache.options.enabled) {
-              NetworkCache cache = NetworkCache();
-              cache.save(key: _cache.options.key, bytes: bytes, duration: _cache.options.duration);
+              _cache.save(bytes: bytes, duration: _cache.options.duration);
             }
 
             if (body is List)
@@ -295,8 +300,7 @@ class GenericRequestObject<ResponseType extends Serializable> {
       }
     } on SocketException catch (exception) {
       if (_cache != null && _cache.options.enabled && _cache.options.recoverFromException) {
-        return NetworkCache().read<ResponseType>(
-          key: _cache.options.key,
+        return _cache.read<ResponseType>(
           uri: _uri,
           isParse: _isParse,
           learning: _learning,

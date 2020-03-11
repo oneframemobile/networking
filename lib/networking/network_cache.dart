@@ -15,12 +15,11 @@ class NetworkCache {
 
   Future<bool> has() async {
     DefaultCacheManager cache = DefaultCacheManager();
-    FileInfo cached = await cache.getFileFromCache(options.key);
+    FileInfo cached = await cache.getFileFromCache(options.optimizedKey);
     return cached != null;
   }
 
   Future<dynamic> read<ResponseType>({
-    String key,
     Uri uri,
     bool isParse,
     NetworkLearning learning,
@@ -28,11 +27,11 @@ class NetworkCache {
     ResponseType type,
   }) async {
     DefaultCacheManager cache = DefaultCacheManager();
-    FileInfo cached = await cache.getFileFromCache(key);
+    FileInfo cached = await cache.getFileFromCache(options.optimizedKey);
     if (cached != null) {
       ResultModel model = ResultModel();
-      model.result = cached.file.readAsStringSync();
-      model.bodyBytes = cached.file.readAsBytesSync();
+      model.result = options.encrypted ? _decryptAsString(cached.file.readAsStringSync()) : cached.file.readAsStringSync();
+      model.bodyBytes = options.encrypted ? _decrypt(cached.file.readAsStringSync()) : cached.file.readAsBytesSync();
       model.json = json.decode(model.result);
       model.url = uri.toString();
 
@@ -59,14 +58,15 @@ class NetworkCache {
   }
 
   Future<dynamic> save({
-    String key,
     Uint8List bytes,
     Duration duration,
   }) async {
+    final Uint8List data = options.encrypted ? _encrypt(bytes) : bytes;
+
     DefaultCacheManager cache = DefaultCacheManager();
     File cached = await cache.putFile(
-      key,
-      bytes,
+      options.optimizedKey,
+      data,
       maxAge: duration == null ? const Duration(days: 30) : duration,
     );
   }
@@ -79,5 +79,21 @@ class NetworkCache {
   clear({String key}) {
     DefaultCacheManager cache = DefaultCacheManager();
     cache.removeFile(key);
+  }
+
+  Uint8List _encrypt(List<int> bytes) {
+    var encoded = base64Encode(bytes);
+    var encodedBytes = utf8.encode(encoded);
+    return Uint8List.fromList(encodedBytes);
+  }
+
+  Uint8List _decrypt(String data) {
+    Uint8List decoded = base64Decode(data);
+    return decoded;
+  }
+
+  String _decryptAsString(String data) {
+    Uint8List decoded = base64Decode(data);
+    return String.fromCharCodes(decoded);
   }
 }

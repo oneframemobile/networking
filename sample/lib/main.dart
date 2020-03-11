@@ -63,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
             key: "hello",
             duration: Duration(days: 5),
             recoverFromException: true,
+            encrypted: true,
           )
           .fetch()
             ..then((asd) {
