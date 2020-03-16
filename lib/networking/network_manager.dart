@@ -26,6 +26,7 @@ class NetworkManager {
     Iterable<Header> headers,
     Duration timeout,
     bool isParse = false,
+    bool asList = false,
   }) {
     return GenericRequestObject<ResponseType>(MethodType.GET, learning, config)
         .url(url)
@@ -34,7 +35,8 @@ class NetworkManager {
         .contentType(contentType)
         .addHeaders(headers)
         .timeout(timeout)
-        .isParse(isParse);
+        .isParse(isParse)
+        .asList(asList);
   }
 
   GenericRequestObject<ResponseType> post<RequestType extends Serializable, ResponseType extends Serializable>({
@@ -46,6 +48,7 @@ class NetworkManager {
     Iterable<Header> headers,
     Duration timeout,
     bool isParse = false,
+    bool isList = false,
   }) {
     return GenericRequestObject<ResponseType>(MethodType.POST, learning, config, body)
         .url(url)
@@ -54,7 +57,8 @@ class NetworkManager {
         .contentType(contentType)
         .addHeaders(headers)
         .timeout(timeout)
-        .isParse(isParse);
+        .isParse(isParse)
+        .asList(isList);
   }
 
   GenericRequestObject<ResponseType> put<RequestType extends Serializable, ResponseType extends Serializable>({

@@ -17,6 +17,7 @@ import 'network_listener.dart';
 import 'network_queue.dart';
 import 'request_id.dart';
 import 'serializable.dart';
+import 'serializable_list.dart';
 import 'serializable_object.dart';
 
 class GenericRequestObject<ResponseType extends Serializable> {
@@ -37,6 +38,8 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
   final RequestId id = new RequestId();
 
+  bool _asList;
+
   GenericRequestObject(
     this._methodType,
     this._learning,
@@ -51,6 +54,12 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
   GenericRequestObject<ResponseType> url(String url) {
     _uri = Uri.parse(_config != null ? _config.baseUrl + url : url);
+    return this;
+  }
+
+  GenericRequestObject<ResponseType> asList(
+      bool asList) {
+    _asList = asList;
     return this;
   }
 
@@ -255,19 +264,24 @@ class GenericRequestObject<ResponseType extends Serializable> {
 
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result);
-            model.jsonString = buffer.toString();
-            var serializable = (_type as SerializableObject);
 
             if (_cache != null && _cache.options.enabled) {
               _cache.save(bytes: bytes, duration: _cache.options.duration);
             }
 
-            if (body is List)
-              model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
-            else if (body is Map)
-              model.data = serializable.fromJson(body) as ResponseType;
-            else
-              model.data = body;
+            if(!_asList) {
+              var map = json.decode(buffer.toString());
+              var serializable = (_type as SerializableObject);
+              model.data = serializable.fromJson(map);
+              model.json = map;
+            }
+            else{
+              Iterable iterable = json.decode(buffer.toString());
+              var serializable = (_type as SerializableList);
+              serializable.list = serializable.fromJsonList(iterable);
+              model.data = _type;
+              model.jsonList = iterable;
+            }
           }
         } catch (e) {
           String s = String.fromCharCodes(bytes);

@@ -6,6 +6,9 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:networking/networking.dart';
 import 'package:networking/networking/model/network_cache_options.dart';
 
+import 'serializable_list.dart';
+import 'serializable_object.dart';
+
 class NetworkCache {
   NetworkCacheOptions options;
 
@@ -39,21 +42,45 @@ class NetworkCache {
         return learning.checkSuccess<ResponseType>(listener, model);
       }
 
-      var serializable = (type as SerializableObject);
-      dynamic body = model.json;
-      if (body is List)
-        model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
-      else if (body is Map)
-        model.data = serializable.fromJson(body) as ResponseType;
-      else
-        model.data = body;
+      var serializable;
 
-      if (learning != null)
-        return learning.checkSuccess<ResponseType>(listener, model);
-      else {
-        listener?.result(model);
-        return model;
+      if (type is SerializableObject) {
+
+        dynamic body = model.json;
+        if (body is List)
+          model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
+        else if (body is Map)
+          model.data = serializable.fromJson(body) as ResponseType;
+        else
+          model.data = body;
+
+        if (learning != null)
+          return learning.checkSuccess<ResponseType>(listener, model);
+        else {
+          listener?.result(model);
+          return model;
+        }
       }
+
+      else if (type is SerializableList){
+
+        dynamic body = model.json;
+        if (body is List)
+          model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
+        else if (body is Map)
+          model.data = serializable.fromJson(body) as ResponseType;
+        else
+          model.data = body;
+
+        if (learning != null)
+          return learning.checkSuccess<ResponseType>(listener, model);
+        else {
+          listener?.result(model);
+          return model;
+        }
+
+      }else
+        throw ErrorDescription("Type is neither  SerializableList nor SerializableObject");
     }
   }
 
