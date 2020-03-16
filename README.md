@@ -117,6 +117,7 @@ manager
 .get<PostResponse, ReqResInError>(
 url: "https://jsonplaceholder.typicode.com/posts",
 type: new PostResponse(),
+asList: true,
 error: new ReqResInError(),
 asList: true,
 listener: new NetworkListener()
