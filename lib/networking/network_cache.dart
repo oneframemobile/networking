@@ -80,7 +80,7 @@ class NetworkCache {
         }
 
       }else
-        throw ErrorDescription("Type is neither  SerializableList nor SerializableObject");
+        print("Type is neither  SerializableList nor SerializableObject");
     }
   }
 
