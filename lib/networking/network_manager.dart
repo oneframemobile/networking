@@ -27,7 +27,7 @@ class NetworkManager {
         .type(type)
         .listener(listener)
         .contentType(contentType)
-        .addHeaders(headers)
+        .addHeaders(config.headers, headers)
         .timeout(timeout)
         .isParse(isParse);
   }
@@ -48,7 +48,7 @@ class NetworkManager {
         .type(type)
         .listener(listener)
         .contentType(contentType)
-        .addHeaders(headers)
+        .addHeaders(config.headers, headers)
         .timeout(timeout)
         .isParse(isParse);
   }
@@ -69,7 +69,7 @@ class NetworkManager {
         .type(type)
         .listener(listener)
         .contentType(contentType)
-        .addHeaders(headers)
+        .addHeaders(config.headers, headers)
         .timeout(timeout)
         .isParse(isParse);
   }
@@ -85,7 +85,7 @@ class NetworkManager {
             MethodType.DELETE, learning, config)
         .url(url)
         .type(type)
-        .addHeaders(headers)
+        .addHeaders(config.headers, headers)
         .timeout(timeout)
         .isParse(isParse);
   }
