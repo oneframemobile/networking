@@ -57,7 +57,6 @@ class ApiManager {
         .asList(true)
         .parseKey("result")
         .fetch();
-    // TODO type List aslist e gerek yok.
   }
 
   Future changePassword({@required ChangePasswordRequest changePasswordRequest, NetworkListener<dynamic, dynamic> listener}) async {

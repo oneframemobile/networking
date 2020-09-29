@@ -3,6 +3,8 @@ import 'package:networking/networking/model/result_model.dart';
 import 'package:networking/networking/network_learning.dart';
 import 'package:networking/networking/network_listener.dart';
 
+import '../api/bean/error_response.dart';
+
 class LocalhostLearning extends NetworkLearning {
   @override
   checkCustomError(NetworkListener listener, ErrorModel error) {
@@ -10,8 +12,6 @@ class LocalhostLearning extends NetworkLearning {
       error.data = error.data.error;
       return sendError(listener, error);
     } catch (e) {
-      ErrorModel<StackTrace> error = new ErrorModel();
-      error.data = e.stackTrace;
       return sendError(listener, error);
     }
   }
@@ -21,10 +21,9 @@ class LocalhostLearning extends NetworkLearning {
     try {
       var data = result.data as dynamic;
       bool isDataList;
-      try{
+      try {
         isDataList = data.list is List;
-      }
-      catch(e){
+      } catch (e) {
         isDataList = false;
       }
       if (isDataList || data.errorMessage == null) {

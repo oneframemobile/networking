@@ -7,8 +7,6 @@ class OneFrameLearning extends NetworkLearning {
       error.data = error.data.error;
       return sendError(listener, error);
     } catch (e) {
-      ErrorModel<StackTrace> error = new ErrorModel();
-      error.data = e.stackTrace;
       return sendError(listener, error);
     }
   }

@@ -30,6 +30,7 @@ dependencies:
 * GET
 * POST
 * PUT
+* DELETE
 * Properties
 * Advanced
 * Learning
@@ -37,6 +38,7 @@ dependencies:
 * Configuration
 * URL
 * Connection Timeout
+* Success Codes
 * Headers
 * SSL Pinning
 
@@ -113,21 +115,10 @@ Result type is ResultModel<dynamic> as default.
 
 ```
 NetworkManager manager = NetworkingFactory.create();
-manager
-.get<PostResponse, ReqResInError>(
-url: "https://jsonplaceholder.typicode.com/posts",
-type: new PostResponse(),
-asList: true,
-error: new ReqResInError(),
-asList: true,
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("hello");
-})
-..onError((dynamic error) {
-print("world");
-}))
-.fetch();
+    manager
+        .get<UserInfoResponse, ErrorResponse>(url: "/user/getUserInfo", type: UserInfoResponse(), errorType: ErrorResponse(), listener: listener)
+        .addHeader(BaseApiHelper.getInstance().tokenHeader)
+        .fetch();
 ```
 ### POST
 
@@ -135,62 +126,49 @@ Parsing given model to concrete object. Also error model must be defined. Aware 
 
 ```
 NetworkManager manager = NetworkingFactory.create();
-manager
-.post<RegisterRequest, RegisterResponse, ReqResInError>(
-url: "https://reqres.in/api/register",
-body: request,
-type: new RegisterResponse(),
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("success");
-})
-..onError((dynamic error) {
-print("fail");
-}))
-.fetch();
+    manager
+        .post<RegisterRequest, RegisterResponse, ErrorResponse>(
+            url: "/accounts/register", type: RegisterResponse(), body: registerRequest, errorType: ErrorResponse(), listener: listener)
+        .fetch();
 ```
 
 ### PUT
 
 ```
 NetworkManager manager = NetworkingFactory.create();
-manager
-.put<User, NoResponse, ReqResInError>(
-url: "https://reqres.in/api/register",
-body: request,
-type: new RegisterResponse(),
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("success");
-})
-..onError((dynamic error) {
-print("fail");
-}))
-.fetch();
+    manager
+        .put<ChangePasswordRequest, DefaultResponse, ErrorResponse>(
+            url: "/accounts/changePassword", errorType: ErrorResponse(), type: DefaultResponse(), body: changePasswordRequest, listener: listener)
+        .addHeader(Header("Authorization", "Bearer token")
+        .fetch();
 ```
+
+## DELETE
+
+```
+NetworkManager manager = NetworkingFactory.create();
+    manager
+        .delete<DefaultResponse, ErrorResponse>(url: "/accounts/" + userMail, errorType: ErrorResponse(), type: DefaultResponse(), listener: listener)
+        .addHeader(Header("Authorization", "Bearer token")
+        .fetch();
+
+```
+
 ## Properties
 
 You are able to customize each request with chain methods.
 
 ```
-await _manager
-.post<RegisterRequest, RegisterResponse, ReqResInError>(
-url: "https://reqres.in/api",
-body: request,
-type: new RegisterResponse(),
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("success");
-})
-..onError((dynamic error) {
-print("fail");
-}))
-.path("register")
-.query("userId", "10")
-.addHeader(new Header("My", "Header"))
-.timeout(new Duration(mins : 1))
-.setContentType("application/json")
-.fetch();
+    _manager
+        .post<RegisterRequest, RegisterResponse, ErrorResponse>(
+            url: "/accounts/register", type: RegisterResponse(), body: registerRequest, errorType: ErrorResponse(), listener: listener)
+        .addHeader(BaseApiHelper.getInstance().tokenHeader)
+        .asList(true)
+        .parseKey("result")
+        .query("userId", "10")
+        .path("register")
+        .timeout(new Duration(mins : 1))
+        .fetch();
 ```
 ## Advanced
 
@@ -256,6 +234,18 @@ NetworkConfig _config = new NetworkConfig();
 config.setTimeout(60000);
 NetworkManager manager = NetworkingFactory.create(config: _config);
 ```
+
+### Success Codes
+
+You can specify the Success Code range and easily manage the returned status code.
+
+```
+NetworkConfig _config = new NetworkConfig();
+_config.addSuccessCodes(200, 205);
+NetworkManager manager = NetworkingFactory.create(config: _config);
+```
+
+
 ### Headers
 
 You can set default headers for every request that created from manager with given config.
