@@ -26,9 +26,12 @@ class _StarforceViewState extends State<StarforceView> {
     return Scaffold(
       appBar: _appbar,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[_registerRequest, _loginRequest, _getUserInfoRequest, _changePasswordRequest, _deleteUserRequest, _getRoleAssignmentsRequest],
+        child: IntrinsicWidth(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[_registerRequest, _loginRequest, _getUserInfoRequest, _changePasswordRequest, _deleteUserRequest, _getRoleAssignmentsRequest],
+          ),
         ),
       ),
     );
@@ -51,7 +54,7 @@ class _StarforceViewState extends State<StarforceView> {
                   print("accounts/register onerror");
                 }));
         },
-        label: Text("Try Networking REGISTER Request"),
+        label: Text("REGISTER Request"),
       );
 
   Widget get _loginRequest => RaisedButton.icon(
@@ -67,7 +70,7 @@ class _StarforceViewState extends State<StarforceView> {
                   print("accounts/login onerror");
                 }));
         },
-        label: Text("Try Networking LOGIN Request"),
+        label: Text("LOGIN Request"),
       );
 
   Widget get _getUserInfoRequest => RaisedButton.icon(
@@ -82,7 +85,7 @@ class _StarforceViewState extends State<StarforceView> {
                   print("accounts/getUserInfo onerror");
                 }));
         },
-        label: Text("Try Networking GET USER INFO Request"),
+        label: Text("GET USER INFO Request"),
       );
 
   Widget get _changePasswordRequest => RaisedButton.icon(
@@ -98,7 +101,7 @@ class _StarforceViewState extends State<StarforceView> {
                   print("accounts/changePassword onerror");
                 }));
         },
-        label: Text("Try Networking CHANGE PASSWORD Request"),
+        label: Text("CHANGE PASSWORD Request"),
       );
 
   Widget get _deleteUserRequest => RaisedButton.icon(
@@ -114,7 +117,7 @@ class _StarforceViewState extends State<StarforceView> {
                   print("accounts/deleteUser onerror");
                 }));
         },
-        label: Text("Try Networking DELETE USER Request"),
+        label: Text("DELETE USER Request"),
       );
 
   Widget get _getRoleAssignmentsRequest => RaisedButton.icon(
@@ -130,6 +133,6 @@ class _StarforceViewState extends State<StarforceView> {
                   print("accounts/getRoleAssignments onerror");
                 }));
         },
-        label: Text("Try Networking RoleAssignments Request"),
+        label: Text("RoleAssignments Request"),
       );
 }
