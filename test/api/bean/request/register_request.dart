@@ -7,7 +7,7 @@ class RegisterRequest implements SerializableObject<RegisterRequest> {
   String name;
   String surname;
 
-  RegisterRequest(this.email, this.password);
+  RegisterRequest({this.email, this.password, this.phoneNumber, this.name, this.surname});
 
   RegisterRequest.fromJsonMap(Map<String, dynamic> map)
       : email = map["email"],
@@ -17,7 +17,7 @@ class RegisterRequest implements SerializableObject<RegisterRequest> {
         surname = map["surname"];
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     data['email'] = email;
     data['password'] = password;
     data['phoneNumber'] = phoneNumber;

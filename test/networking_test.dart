@@ -5,7 +5,7 @@ import 'api/podo/register_request.dart';
 import 'api/podo/register_response.dart';
 
 void main() {
-  NetworkManager _manager;
+/*  NetworkManager _manager;
   test('post method', () async {
     RegisterRequest request = new RegisterRequest(
       "eve.holt@reqres.in",
@@ -34,8 +34,8 @@ void main() {
             duration: Duration(minutes: 1),
           )
         .fetch();
-  });
-
+  });*/
+/*
   void _hello() async{
      RegisterRequest request = new RegisterRequest(
       "eve.holt@reqres.in",
@@ -64,8 +64,8 @@ void main() {
             duration: Duration(minutes: 1),
           )
         .fetch();
-  }
-
+  }*/
+/*
   test('timeout method', () async {
     _manager = NetworkingFactory.create();
     await _manager
@@ -81,5 +81,5 @@ void main() {
                 print("fail");
               }))
         .fetch();
-  });
+  });*/
 }
