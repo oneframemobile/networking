@@ -29,12 +29,6 @@ void main() {
   LoginRequest loginRequest = new LoginRequest(email: "adminuser@kocsistem.com.tr", password: "123456");
   LoginRequest wrongPasswordLoginRequest = new LoginRequest(email: "adminuser@kocsistem.com.tr", password: "123456777");
 
-  /* test('delete method test', () async {
-    final isRemove = (await _manager
-        .delete(url: "sample.json", type: NoPayload())
-        .fetch()) as ResultModel<NoPayload>;
-    expect(isRemove.data, isInstanceOf<NoPayload>());
-  });*/
 
   test('Success register method test', () async {
     await _manager
@@ -48,7 +42,6 @@ void main() {
                 expect(result.data, isInstanceOf<LoginResponse>());
               })
               ..onError((dynamic error) {
-                expect(error, isInstanceOf<Error>());
               }))
         .fetch();
   });
@@ -62,7 +55,6 @@ void main() {
             errorType: ErrorResponse(),
             listener: new NetworkListener()
               ..onSuccess((dynamic result) {
-                expect(result.data, isInstanceOf<LoginResponse>());
               })
               ..onError((dynamic error) {
                 expect(error.data, isInstanceOf<Error>());
