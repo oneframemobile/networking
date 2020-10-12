@@ -275,7 +275,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
             return _learning.checkSuccess<ResponseType>(_listener, model);
           }
 
-          buffer.write(String.fromCharCodes(bytes));
+          buffer.write(utf8.encode(String.fromCharCodes(bytes)));
 
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result);
