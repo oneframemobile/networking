@@ -258,6 +258,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       );
 
       var buffer = new StringBuffer();
+      var bytes = await consolidateHttpClientResponseBytes(response);
       await for (var contents in response.transform(Utf8Decoder())) {
         buffer.write(contents);
       }
@@ -271,10 +272,20 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         }
 
         try {
+          model.result = utf8.decode(bytes);
+          if (_isParse) {
+            await request.done;
+            return _learning.checkSuccess<ResponseType>(_listener, model);
+          }
+
+          //buffer.write(String.fromCharCodes(bytes));
 
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result);
 
+            if (_cache != null && _cache.options.enabled) {
+              _cache.save(bytes: bytes, duration: _cache.options.duration);
+            }
 
             if (!_asList) {
               var map = json.decode(buffer.toString());
@@ -297,8 +308,8 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
             }
           }
         } catch (e) {
-          //String s = String.fromCharCodes(bytes);
-         // model.bodyBytes = new Uint8List.fromList(s.codeUnits);
+          String s = String.fromCharCodes(bytes);
+          model.bodyBytes = new Uint8List.fromList(s.codeUnits);
           model.result = "";
           print(e);
         }
