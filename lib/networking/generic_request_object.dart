@@ -258,6 +258,9 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       );
 
       var buffer = new StringBuffer();
+      await for (var contents in response.transform(Utf8Decoder())) {
+        buffer.write(contents);
+      }
       var bytes = await consolidateHttpClientResponseBytes(response);
 
       if (_config.successStatusCode.length > 0 &&_config.successStatusCode.indexOf(response.statusCode) > -1) {
