@@ -260,7 +260,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
       var buffer = new StringBuffer();
       var bytes = await consolidateHttpClientResponseBytes(response);
 
-      if (_config.successStatusCode.indexOf(response.statusCode) > -1) {
+      if (_config.successStatusCode.length > 0 &&_config.successStatusCode.indexOf(response.statusCode) > -1) {
         ResultModel model = ResultModel();
         model.url = _uri.toString();
 
@@ -291,7 +291,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
               model.json = map;
             } else {
               Iterable iterable;
-              if(_parseKey != null || _parseKey.length > 0){
+              if(_parseKey != null){
                 iterable = json.decode(buffer.toString())[_parseKey];
               }
               else{
