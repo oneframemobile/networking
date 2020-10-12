@@ -259,9 +259,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
 
       var buffer = new StringBuffer();
       var bytes = await consolidateHttpClientResponseBytes(response);
-      await for (var contents in response.transform(Utf8Decoder())) {
-        buffer.write(contents);
-      }
+
 
       if (_config.successStatusCode.length > 0 &&_config.successStatusCode.indexOf(response.statusCode) > -1) {
         ResultModel model = ResultModel();
@@ -278,7 +276,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
             return _learning.checkSuccess<ResponseType>(_listener, model);
           }
 
-          //buffer.write(String.fromCharCodes(bytes));
+          buffer.write(String.fromCharCodes(bytes));
 
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result);
@@ -322,7 +320,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
           return model;
         }
       } else {
-        //buffer.write(String.fromCharCodes(bytes));
+        buffer.write(String.fromCharCodes(bytes));
         await request.done;
         ErrorModel error = ErrorModel();
         error.description = response.reasonPhrase;
