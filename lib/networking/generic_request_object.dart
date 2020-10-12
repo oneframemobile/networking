@@ -19,7 +19,7 @@ import 'request_id.dart';
 import 'serializable.dart';
 import 'serializable_list.dart';
 import 'serializable_object.dart';
-
+//TODO v
 class GenericRequestObject<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable> {
   Set<Header> _headers;
   ContentType _contentType;
