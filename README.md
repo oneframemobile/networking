@@ -26,7 +26,6 @@ pubspec.yaml
 
 
 * Introduction
-* Getting Started
 * Parse
 * Requesting
 * GET
