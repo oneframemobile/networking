@@ -10,8 +10,10 @@ Http client for Dart also Flutter. Networking supports Serilazation, Global Conf
 ### Add dependency
 
 ```yaml
-dependencies:
-  networking: x #latest version
+  networking:
+    git:
+      url: https://github.com/oneframemobile/networking.git
+      ref: 1.0.1
 ```
 
 ### Requirement
