@@ -189,23 +189,39 @@ class MyLearning extends NetworkLearning {
 @override
 void checkCustomError(NetworkListener listener, ErrorModel error) {
 // TODO: implement checkCustomError
+    try {
+      error.data = error.data.error;
+      return sendError(listener, error);
+    } catch (e) {
+      return sendError(listener, error);
+    }
 }
 ```
 ```
 @override
 void checkSuccess(NetworkListener listener, ResultModel result) {
-try {
-if (result.data.errorMessage == null) {
-sendSuccess(listener, result);
-} else {
-ErrorModel<String> error = new ErrorModel();
-error.description = "Hata!";
-sendError(listener, error);
-}
-} on NoSuchMethodError catch (e) {
-print(e.toString());
-}
-}
+    try {
+          var data = result.data as dynamic;
+          bool isDataList;
+          try{
+            isDataList = data.list is List;
+          }
+          catch(e){
+            isDataList = false;
+          }
+          if (isDataList || data.errorMessage == null) {
+            return sendSuccess(listener, result as dynamic);
+          } else {
+            ErrorModel<String> error = new ErrorModel();
+            error.description = "Error";
+            return sendError(listener, error);
+          }
+        } on NoSuchMethodError catch (e) {
+          ErrorModel<StackTrace> error = new ErrorModel();
+          error.data = e.stackTrace;
+          return sendError(listener, error);
+        }
+    }
 }
 ```
 Then you can use manager instance for following operations.
@@ -243,6 +259,7 @@ You can specify the Success Code range and easily manage the returned status cod
 NetworkConfig _config = new NetworkConfig();
 _config.addSuccessCodes(200, 205);
 NetworkManager manager = NetworkingFactory.create(config: _config);
+// * If the reply returned from http is within the range you specify by _config.addSuccessCodes, it will fall to onsuccess in the Learning class, to onError if it is not within the range you specify.
 ```
 
 

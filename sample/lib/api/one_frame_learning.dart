@@ -26,7 +26,7 @@ class OneFrameLearning extends NetworkLearning {
         return sendSuccess(listener, result as dynamic);
       } else {
         ErrorModel<String> error = new ErrorModel();
-        error.description = "Hata!";
+        error.description = "Error";
         return sendError(listener, error);
       }
     } on NoSuchMethodError catch (e) {
