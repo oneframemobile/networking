@@ -197,7 +197,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         return await client.patchUrl(_uri);
     }
 
-    throw new Exception("Unknown method type");
+    throw new Exception("Unknown method type.");
   }
 
   Future<dynamic> fetch() async {
@@ -259,7 +259,6 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
 
       var buffer = new StringBuffer();
       var bytes = await consolidateHttpClientResponseBytes(response);
-
 
       if (_config.successStatusCode.length > 0 &&_config.successStatusCode.indexOf(response.statusCode) > -1) {
         ResultModel model = ResultModel();
