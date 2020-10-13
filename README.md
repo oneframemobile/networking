@@ -49,20 +49,6 @@ pubspec.yaml
 Framework supports a networking component that works with a variety of networking providers. This article shows how to use Framework networking component API
 in your code.
 
-## Getting Started
-
-Following lines need to be added in pubspec.yaml. Make sure to call ``get dependencies`` command.
-
-```
-pubspec.yaml
-```
-```
-dependencies:
-networking:
-path: /networking
-git:
-url: http://bellatrix:8080/tfs/ArgeMimariCollection/OneFrameCross/_git/Networking
-```
 ## Parse
 
 Each request or response body must implement SerializationObject<T> or SerializationList<T>. So that it can be mappable from JSON to Model or vice versa.
