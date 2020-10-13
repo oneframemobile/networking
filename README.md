@@ -8,7 +8,7 @@ Http client for Dart also Flutter. Networking supports Serilazation, Global Conf
 ## Get started
 
 ### Add dependency
-
+pubspec.yaml
 ```yaml
   networking:
     git:
