@@ -18,72 +18,95 @@ class NetworkManager {
     this.config,
   });
 
-  GenericRequestObject<ResponseType> get<ResponseType extends Serializable>({
+  GenericRequestObject<Null, ResponseType, ErrorType> get<ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     ResponseType type,
+    ErrorType errorType,
     NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
     Duration timeout,
     bool isParse = false,
+    bool asList = false,
   }) {
-    return GenericRequestObject<ResponseType>(MethodType.GET, learning, config)
+    return GenericRequestObject<Null, ResponseType, ErrorType>(MethodType.GET, learning, config)
         .url(url)
         .type(type)
+        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
         .timeout(timeout)
-        .isParse(isParse);
+        .isParse(isParse)
+        .asList(asList);
   }
 
-  GenericRequestObject<ResponseType> post<RequestType extends Serializable, ResponseType extends Serializable>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> post<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     dynamic body,
     ResponseType type,
+    ErrorType errorType,
     NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
     Duration timeout,
     bool isParse = false,
+    bool isList = false,
   }) {
-    return GenericRequestObject<ResponseType>(MethodType.POST, learning, config, body)
+    return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.POST, learning, config, body)
         .url(url)
         .type(type)
+        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
         .timeout(timeout)
-        .isParse(isParse);
+        .isParse(isParse)
+        .asList(isList);
   }
 
-  GenericRequestObject<ResponseType> put<RequestType extends Serializable, ResponseType extends Serializable>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> put<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     dynamic body,
     ResponseType type,
+    ErrorType errorType,
     NetworkListener listener,
     ContentType contentType,
     Iterable<Header> headers,
     Duration timeout,
     bool isParse = false,
+    bool isList = false,
   }) {
-    return GenericRequestObject<ResponseType>(MethodType.PUT, learning, config, body)
+    return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.PUT, learning, config, body)
         .url(url)
         .type(type)
+        .errorType(errorType)
         .listener(listener)
         .contentType(contentType)
         .addHeaders(headers)
         .timeout(timeout)
+        .asList(isList)
         .isParse(isParse);
   }
 
-  GenericRequestObject<ResponseType> delete<RequestType extends Serializable, ResponseType extends Serializable>({
+  GenericRequestObject<Null, ResponseType, ErrorType> delete<ResponseType extends Serializable, ErrorType extends Serializable>({
     String url,
     ResponseType type,
+    ErrorType errorType,
+    NetworkListener listener,
     Iterable<Header> headers,
     Duration timeout,
+    bool isList = false,
     bool isParse = false,
   }) {
-    return GenericRequestObject<ResponseType>(MethodType.DELETE, learning, config).url(url).type(type).addHeaders(headers).timeout(timeout).isParse(isParse);
+    return GenericRequestObject<Null, ResponseType, ErrorType>(MethodType.DELETE, learning, config)
+        .url(url)
+        .type(type)
+        .errorType(errorType)
+        .listener(listener)
+        .addHeaders(headers)
+        .timeout(timeout)
+        .asList(isList)
+        .isParse(isParse);
   }
 }

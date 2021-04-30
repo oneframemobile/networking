@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:networking/networking.dart';
-import 'package:sample/api/podo/my_learning.dart';
 
+import 'api/error_response.dart';
+import 'api/one_frame_learning.dart';
 import 'api/podo/register_request.dart';
 import 'api/podo/register_response.dart';
+import 'starforce.dart';
 
 void main() {
   NetworkingFactory.init();
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: StarforceView(),
     );
   }
 }
@@ -43,11 +45,11 @@ class _MyHomePageState extends State<MyHomePage> {
         "pistol",
       );
 
-      MyLearning learning = new MyLearning();
+      OneFrameLearning learning = new OneFrameLearning();
       NetworkingFactory.init();
       var manager = NetworkingFactory.create(learning: learning);
       manager
-          .post<RegisterRequest, RegisterResponse>(
+          .post<RegisterRequest, RegisterResponse, ErrorResponse>(
               url: "https://reqres.in/api/register",
               body: request,
               type: new RegisterResponse(),

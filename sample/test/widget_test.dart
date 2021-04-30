@@ -7,24 +7,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sample/api/bean/request/register_request.dart';
+import 'package:sample/api/bean/response/register_response.dart';
+import 'package:sample/api/manager.dart';
 
-import 'package:sample/main.dart';
+import '../lib/main.dart';
+
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('Success Register Test', (WidgetTester tester) async {
+    ApiManager _apiManager = ApiManager.getInstance;
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    RegisterRequest registerRequest = new RegisterRequest(email: "deneme@deneme.com", password: "deneme1234", name: "deneme", surname: "denemesurname");
+    var response = await _apiManager.register(registerRequest: registerRequest);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(response.data, RegisterResponse());
   });
 }

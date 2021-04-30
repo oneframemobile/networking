@@ -8,10 +8,12 @@ Http client for Dart also Flutter. Networking supports Serilazation, Global Conf
 ## Get started
 
 ### Add dependency
-
+pubspec.yaml
 ```yaml
-dependencies:
-  networking: x #latest version
+  networking:
+    git:
+      url: https://github.com/oneframemobile/networking.git
+      ref: 1.0.1
 ```
 
 ### Requirement
@@ -24,12 +26,12 @@ dependencies:
 
 
 * Introduction
-* Getting Started
 * Parse
 * Requesting
 * GET
 * POST
 * PUT
+* DELETE
 * Properties
 * Advanced
 * Learning
@@ -37,6 +39,7 @@ dependencies:
 * Configuration
 * URL
 * Connection Timeout
+* Success Codes
 * Headers
 * SSL Pinning
 
@@ -45,20 +48,6 @@ dependencies:
 Framework supports a networking component that works with a variety of networking providers. This article shows how to use Framework networking component API
 in your code.
 
-## Getting Started
-
-Following lines need to be added in pubspec.yaml. Make sure to call ``get dependencies`` command.
-
-```
-pubspec.yaml
-```
-```
-dependencies:
-networking:
-path: /networking
-git:
-url: http://bellatrix:8080/tfs/ArgeMimariCollection/OneFrameCross/_git/Networking
-```
 ## Parse
 
 Each request or response body must implement SerializationObject<T> or SerializationList<T>. So that it can be mappable from JSON to Model or vice versa.
@@ -113,20 +102,10 @@ Result type is ResultModel<dynamic> as default.
 
 ```
 NetworkManager manager = NetworkingFactory.create();
-manager
-.get<PostResponse, ReqResInError>(
-url: "https://jsonplaceholder.typicode.com/posts",
-type: new PostResponse(),
-error: new ReqResInError(),
-asList: true,
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("hello");
-})
-..onError((dynamic error) {
-print("world");
-}))
-.fetch();
+    manager
+        .get<UserInfoResponse, ErrorResponse>(url: "/user/getUserInfo", type: UserInfoResponse(), errorType: ErrorResponse(), listener: listener)
+        .addHeader(BaseApiHelper.getInstance().tokenHeader)
+        .fetch();
 ```
 ### POST
 
@@ -134,62 +113,49 @@ Parsing given model to concrete object. Also error model must be defined. Aware 
 
 ```
 NetworkManager manager = NetworkingFactory.create();
-manager
-.post<RegisterRequest, RegisterResponse, ReqResInError>(
-url: "https://reqres.in/api/register",
-body: request,
-type: new RegisterResponse(),
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("success");
-})
-..onError((dynamic error) {
-print("fail");
-}))
-.fetch();
+    manager
+        .post<RegisterRequest, RegisterResponse, ErrorResponse>(
+            url: "/accounts/register", type: RegisterResponse(), body: registerRequest, errorType: ErrorResponse(), listener: listener)
+        .fetch();
 ```
 
 ### PUT
 
 ```
 NetworkManager manager = NetworkingFactory.create();
-manager
-.put<User, NoResponse, ReqResInError>(
-url: "https://reqres.in/api/register",
-body: request,
-type: new RegisterResponse(),
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("success");
-})
-..onError((dynamic error) {
-print("fail");
-}))
-.fetch();
+    manager
+        .put<ChangePasswordRequest, DefaultResponse, ErrorResponse>(
+            url: "/accounts/changePassword", errorType: ErrorResponse(), type: DefaultResponse(), body: changePasswordRequest, listener: listener)
+        .addHeader(Header("Authorization", "Bearer token")
+        .fetch();
 ```
+
+## DELETE
+
+```
+NetworkManager manager = NetworkingFactory.create();
+    manager
+        .delete<DefaultResponse, ErrorResponse>(url: "/accounts/" + userMail, errorType: ErrorResponse(), type: DefaultResponse(), listener: listener)
+        .addHeader(Header("Authorization", "Bearer token")
+        .fetch();
+
+```
+
 ## Properties
 
 You are able to customize each request with chain methods.
 
 ```
-await _manager
-.post<RegisterRequest, RegisterResponse, ReqResInError>(
-url: "https://reqres.in/api",
-body: request,
-type: new RegisterResponse(),
-listener: new NetworkListener()
-..onSuccess((dynamic result) {
-print("success");
-})
-..onError((dynamic error) {
-print("fail");
-}))
-.path("register")
-.query("userId", "10")
-.addHeader(new Header("My", "Header"))
-.timeout(new Duration(mins : 1))
-.setContentType("application/json")
-.fetch();
+    _manager
+        .post<RegisterRequest, RegisterResponse, ErrorResponse>(
+            url: "/accounts/register", type: RegisterResponse(), body: registerRequest, errorType: ErrorResponse(), listener: listener)
+        .addHeader(BaseApiHelper.getInstance().tokenHeader)
+        .asList(true)
+        .parseKey("result")
+        .query("userId", "10")
+        .path("register")
+        .timeout(new Duration(mins : 1))
+        .fetch();
 ```
 ## Advanced
 
@@ -210,23 +176,39 @@ class MyLearning extends NetworkLearning {
 @override
 void checkCustomError(NetworkListener listener, ErrorModel error) {
 // TODO: implement checkCustomError
+    try {
+      error.data = error.data.error;
+      return sendError(listener, error);
+    } catch (e) {
+      return sendError(listener, error);
+    }
 }
 ```
 ```
 @override
 void checkSuccess(NetworkListener listener, ResultModel result) {
-try {
-if (result.data.errorMessage == null) {
-sendSuccess(listener, result);
-} else {
-ErrorModel<String> error = new ErrorModel();
-error.description = "Hata!";
-sendError(listener, error);
-}
-} on NoSuchMethodError catch (e) {
-print(e.toString());
-}
-}
+    try {
+          var data = result.data as dynamic;
+          bool isDataList;
+          try{
+            isDataList = data.list is List;
+          }
+          catch(e){
+            isDataList = false;
+          }
+          if (isDataList || data.errorMessage == null) {
+            return sendSuccess(listener, result as dynamic);
+          } else {
+            ErrorModel<String> error = new ErrorModel();
+            error.description = "Error";
+            return sendError(listener, error);
+          }
+        } on NoSuchMethodError catch (e) {
+          ErrorModel<StackTrace> error = new ErrorModel();
+          error.data = e.stackTrace;
+          return sendError(listener, error);
+        }
+    }
 }
 ```
 Then you can use manager instance for following operations.
@@ -255,6 +237,19 @@ NetworkConfig _config = new NetworkConfig();
 config.setTimeout(60000);
 NetworkManager manager = NetworkingFactory.create(config: _config);
 ```
+
+### Success Codes
+
+You can specify the Success Code range and easily manage the returned status code.
+
+```
+NetworkConfig _config = new NetworkConfig();
+_config.addSuccessCodes(200, 205);
+NetworkManager manager = NetworkingFactory.create(config: _config);
+// * If the reply returned from http is within the range you specify by _config.addSuccessCodes, it will fall to onsuccess in the Learning class, to onError if it is not within the range you specify.
+```
+
+
 ### Headers
 
 You can set default headers for every request that created from manager with given config.

@@ -13,7 +13,12 @@ abstract class NetworkLearning {
   }
 
   sendError(NetworkListener listener, ErrorModel error) {
+    if(listener != null)
     listener.error(error);
-    throw error;
+
+
+
+    //return error;
+    //throw error;
   }
 }
