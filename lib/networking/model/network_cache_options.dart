@@ -1,17 +1,17 @@
 class NetworkCacheOptions {
-  String key;
+  String? key;
   bool enabled = false;
   bool recoverFromException = false;
   bool encrypted = false;
-  Duration duration = Duration(days: 30);
+  Duration? duration = Duration(days: 30);
 
   String get optimizedKey => "$key${encrypted ? "encrypted" : ""}";
 
   NetworkCacheOptions({
     this.key,
-    this.enabled,
+    this.enabled = false,
     this.duration,
-    this.recoverFromException,
-    this.encrypted
+    this.recoverFromException = false,
+    this.encrypted = false
   });
 }

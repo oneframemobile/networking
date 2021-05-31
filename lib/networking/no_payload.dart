@@ -9,6 +9,6 @@ class NoPayload extends SerializableObject<NoPayload> {
 
   @override
   Map<String, dynamic> toJson() {
-    return null;
+    return Map<String, dynamic>();
   }
 }

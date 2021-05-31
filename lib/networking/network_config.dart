@@ -3,9 +3,9 @@ import 'header.dart';
 class NetworkConfig {
   Set<Header> _headers = new Set();
   Duration _timeout = new Duration(seconds: 60);
-  List<int> _successStatusCode = new List();
+  List<int> _successStatusCode = [];
 
-  String _baseUrl;
+  late String _baseUrl;
 
   NetworkConfig addHeaders(Iterable<Header> iterable) {
     _headers.addAll(iterable);

@@ -5,8 +5,8 @@ import 'generic_request_object.dart';
 class NetworkQueue {
   static final NetworkQueue instance = NetworkQueue._internal();
 
-  StreamController<GenericRequestObject> _queue;
-  bool _isRunning;
+  late StreamController<GenericRequestObject> _queue;
+  bool _isRunning = false;
 
   NetworkQueue._internal() {
     _queue = new StreamController();

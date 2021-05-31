@@ -8,14 +8,12 @@ abstract class NetworkLearning {
   checkSuccess<T>(NetworkListener listener, ResultModel result);
 
   sendSuccess(NetworkListener listener, ResultModel result) {
-    listener.result(result);
+    listener.result!(result);
     return result;
   }
 
   sendError(NetworkListener listener, ErrorModel error) {
-    if(listener != null)
-    listener.error(error);
-
+    listener.error!(error);
 
 
     //return error;

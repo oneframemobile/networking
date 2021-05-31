@@ -1,7 +1,7 @@
 import 'dart:math';
 
 class RequestId {
-  _GUID _guid;
+  _GUID? _guid;
 
   RequestId() {
     _guid = new _GUID();
@@ -16,7 +16,7 @@ class RequestId {
 
 class _GUID {
   static final Random _random = Random();
-  String value;
+  String? value;
 
   _GUID() {
     value = _generateV4();

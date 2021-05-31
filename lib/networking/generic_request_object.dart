@@ -21,26 +21,26 @@ import 'serializable_list.dart';
 import 'serializable_object.dart';
 
 class GenericRequestObject<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable> {
-  Set<Header> _headers;
-  ContentType _contentType;
-  MethodType _methodType;
-  Duration _timeout;
-  Uri _uri;
-  NetworkLearning _learning;
-  NetworkConfig _config;
-  NetworkListener _listener;
+  late Set<Header> _headers;
+  late ContentType _contentType;
+  late MethodType _methodType;
+  late Duration _timeout;
+  late Uri _uri;
+  late NetworkLearning _learning;
+  late NetworkConfig _config;
+  late NetworkListener _listener;
   dynamic _body;
-  ResponseType _type;
-  ErrorType _errorType;
-  Set<Cookie> _cookies;
-  bool _isParse;
-  String body;
-  NetworkCache _cache;
+  late ResponseType _type;
+  late ErrorType _errorType;
+  late Set<Cookie> _cookies;
+  late bool _isParse;
+  late String body;
+  late NetworkCache _cache;
 
   final RequestId id = new RequestId();
 
-  bool _asList;
-  String _parseKey;
+  late bool _asList;
+  late String _parseKey;
 
   GenericRequestObject(
     this._methodType,
@@ -163,11 +163,11 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> cache({
-    bool enabled,
-    @required String key,
-    Duration duration,
-    bool recoverFromException,
-    bool encrypted,
+    bool enabled = false,
+    required String key,
+    Duration? duration,
+    bool recoverFromException = false,
+    bool encrypted = false,
   }) {
     _cache = NetworkCache();
     _cache.options = NetworkCacheOptions(
@@ -299,7 +299,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
               }
 
               var serializable = (_type as SerializableList);
-              serializable.list = serializable.fromJsonList(iterable);
+              serializable.list = serializable.fromJsonList(iterable.toList());
               model.data = _type;
               model.jsonList = iterable;
             }
@@ -315,7 +315,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         if (_learning != null)
           return _learning.checkSuccess<ResponseType>(_listener, model);
         else {
-          _listener?.result(model);
+          _listener?.result!(model);
           return model;
         }
       } else {
@@ -340,7 +340,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         if (_learning != null)
           return _learning.checkCustomError(_listener, error);
         else {
-          _listener?.error(error);
+          _listener?.error!(error);
           throw (error);
         }
       }
@@ -367,14 +367,14 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
     return json.map((fields) => model.fromJson(fields)).cast<ResponseType>().toList();
   }
 
-  Future<void> customErrorHandler(exception, NetworkErrorTypes types, {HttpClientRequest request}) async {
+  Future<void> customErrorHandler(exception, NetworkErrorTypes types, {HttpClientRequest? request}) async {
     await request?.done;
     ErrorModel error = ErrorModel();
     error.description = exception.message;
     error.type = types;
     error.request = this;
 
-    _listener?.error(error);
+    _listener?.error!(error);
 
     if (_learning != null)
       return await _learning.checkCustomError(_listener, error);

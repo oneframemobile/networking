@@ -11,9 +11,9 @@ class NetworkingFactory {
   }
 
   static NetworkManager create({
-    HttpClient client,
-    NetworkLearning learning,
-    NetworkConfig config,
+    HttpClient? client,
+    NetworkLearning? learning,
+    NetworkConfig? config,
   }) {
     return new NetworkManager(
       client: client == null ? new HttpClient() : client,

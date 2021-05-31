@@ -2,8 +2,8 @@ import 'model/error_model.dart';
 import 'model/result_model.dart';
 
 class NetworkListener<R, E> {
-  Null Function(ResultModel<R>) result;
-  Null Function(ErrorModel<E>) error;
+  Function(ResultModel<R>)? result;
+  Function(ErrorModel<E>)? error;
 
   NetworkListener();
 

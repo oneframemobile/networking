@@ -3,14 +3,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 class ResultModel<T> {
-  T data;
-  String url;
-  Map<String, dynamic> json;
-  String jsonString;
-  Iterable jsonList;
-  String result;
-  List<Cookie> cookies;
-  Uint8List bodyBytes;
+  late T data;
+  late String url;
+  late Map<String, dynamic> json;
+  late String jsonString;
+  late Iterable jsonList;
+  late String result;
+  late List<Cookie> cookies;
+  late Uint8List bodyBytes;
 
   ResultModel();
 }

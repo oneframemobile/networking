@@ -10,7 +10,7 @@ import 'serializable_list.dart';
 import 'serializable_object.dart';
 
 class NetworkCache {
-  NetworkCacheOptions options;
+  late NetworkCacheOptions options;
 
   NetworkCache() {
     options = NetworkCacheOptions();
@@ -18,19 +18,19 @@ class NetworkCache {
 
   Future<bool> has() async {
     DefaultCacheManager cache = DefaultCacheManager();
-    FileInfo cached = await cache.getFileFromCache(options.optimizedKey);
+    FileInfo? cached = await cache.getFileFromCache(options.optimizedKey);
     return cached != null;
   }
 
   Future<dynamic> read<ResponseType>({
-    Uri uri,
-    bool isParse,
-    NetworkLearning learning,
-    NetworkListener listener,
-    ResponseType type,
+    required Uri uri,
+    bool isParse = false,
+    NetworkLearning? learning,
+    NetworkListener? listener,
+    ResponseType? type,
   }) async {
     DefaultCacheManager cache = DefaultCacheManager();
-    FileInfo cached = await cache.getFileFromCache(options.optimizedKey);
+    FileInfo? cached = await cache.getFileFromCache(options.optimizedKey);
     if (cached != null) {
       ResultModel model = ResultModel();
       model.result = options.encrypted ? _decryptAsString(cached.file.readAsStringSync()) : cached.file.readAsStringSync();
@@ -39,7 +39,7 @@ class NetworkCache {
       model.url = uri.toString();
 
       if (isParse) {
-        return learning.checkSuccess<ResponseType>(listener, model);
+        return learning!.checkSuccess<ResponseType>(listener!, model);
       }
 
       var serializable;
@@ -55,9 +55,9 @@ class NetworkCache {
           model.data = body;
 
         if (learning != null)
-          return learning.checkSuccess<ResponseType>(listener, model);
+          return learning.checkSuccess<ResponseType>(listener!, model);
         else {
-          listener?.result(model);
+          listener?.result!(model);
           return model;
         }
       }
@@ -73,9 +73,9 @@ class NetworkCache {
           model.data = body;
 
         if (learning != null)
-          return learning.checkSuccess<ResponseType>(listener, model);
+          return learning.checkSuccess<ResponseType>(listener!, model);
         else {
-          listener?.result(model);
+          listener?.result!(model);
           return model;
         }
 
@@ -85,8 +85,8 @@ class NetworkCache {
   }
 
   Future<dynamic> save({
-    Uint8List bytes,
-    Duration duration,
+    required Uint8List bytes,
+    required duration,
   }) async {
     final Uint8List data = options.encrypted ? _encrypt(bytes) : bytes;
 
@@ -103,7 +103,7 @@ class NetworkCache {
     cache.emptyCache();
   }
 
-  clear({String key}) {
+  clear({required String key}) {
     DefaultCacheManager cache = DefaultCacheManager();
     cache.removeFile(key);
   }
