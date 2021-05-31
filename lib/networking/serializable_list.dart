@@ -1,7 +1,7 @@
 import 'serializable.dart';
 
 abstract class SerializableList<T> extends Serializable<T> {
-  List<T> list = [];
+  List<T>? list = [];
 
   SerializableList();
 

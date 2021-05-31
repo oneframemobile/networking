@@ -16,10 +16,9 @@ class OneFrameLearning extends NetworkLearning {
     try {
       var data = result.data as dynamic;
       bool isDataList;
-      try{
+      try {
         isDataList = data.list is List;
-      }
-      catch(e){
+      } catch (e) {
         isDataList = false;
       }
       if (isDataList || data.errorMessage == null) {
@@ -31,7 +30,7 @@ class OneFrameLearning extends NetworkLearning {
       }
     } on NoSuchMethodError catch (e) {
       ErrorModel<StackTrace> error = new ErrorModel();
-      error.data = e.stackTrace;
+      error.data = e.stackTrace!;
       return sendError(listener, error);
     }
   }

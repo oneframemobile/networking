@@ -4,7 +4,7 @@ class LoginRequest implements SerializableObject<LoginRequest> {
   String email;
   String password;
 
-  LoginRequest({this.email, this.password});
+  LoginRequest({required this.email, required this.password});
 
   LoginRequest.fromJsonMap(Map<String, dynamic> map)
       : email = map["email"],

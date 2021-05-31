@@ -4,17 +4,14 @@ import '../../podo/base_response.dart';
 import 'claim_list_response.dart';
 import 'claim_response.dart';
 
-class LoginResponse
-    with BaseResponse
-    implements SerializableObject<LoginResponse> {
-  List<ClaimResponse> claims;
-  String token;
-
-  LoginResponse();
-
+class LoginResponse implements SerializableObject<LoginResponse> {
+  List<ClaimResponse>? claims;
+  String? token;
+  String? refreshToken;
+  LoginResponse() {}
   LoginResponse.fromJsonMap(Map<String, dynamic> json)
       : token = json["token"],
-        claims = ClaimListResponse().fromJsonList(json["claims"]);
+        refreshToken = json["refreshToken"];
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> data = new Map<String, dynamic>();

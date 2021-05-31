@@ -2,13 +2,18 @@ import 'package:networking/networking.dart';
 import 'package:sample/api/validation_errors.dart';
 
 class Error implements SerializableObject<Error> {
-  String correlationId;
-  int code;
-  String message;
-  String details;
-  List<ValidationErrors> validationErrors;
+  String? correlationId;
+  int? code;
+  String? message;
+  String? details;
+  List<ValidationErrors>? validationErrors;
 
-  Error({this.correlationId, this.code, this.message, this.details, this.validationErrors});
+  Error(
+      {this.correlationId,
+      this.code,
+      this.message,
+      this.details,
+      this.validationErrors});
 
   Error.fromJson(Map<String, dynamic> json) {
     correlationId = json['correlationId'];
@@ -16,9 +21,9 @@ class Error implements SerializableObject<Error> {
     message = json['message'];
     details = json['details'];
     if (json['validationErrors'] != null) {
-      validationErrors = new List<ValidationErrors>();
+      validationErrors = <ValidationErrors>[];
       json['validationErrors'].forEach((v) {
-        validationErrors.add(new ValidationErrors.fromJson(v));
+        validationErrors!.add(new ValidationErrors.fromJson(v));
       });
     }
   }
@@ -30,7 +35,8 @@ class Error implements SerializableObject<Error> {
     data['message'] = this.message;
     data['details'] = this.details;
     if (this.validationErrors != null) {
-      data['validationErrors'] = this.validationErrors.map((v) => v.toJson()).toList();
+      data['validationErrors'] =
+          this.validationErrors!.map((v) => v.toJson()).toList();
     }
     return data;
   }

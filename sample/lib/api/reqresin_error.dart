@@ -3,8 +3,6 @@ import 'package:networking/networking.dart';
 class ReqResInError implements SerializableObject<ReqResInError> {
   String error;
 
-  ReqResInError();
-
   ReqResInError.fromJsonMap(Map<String, dynamic> map) : error = map["error"];
 
   Map<String, dynamic> toJson() {

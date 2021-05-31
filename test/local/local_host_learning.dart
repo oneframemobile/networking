@@ -3,8 +3,6 @@ import 'package:networking/networking/model/result_model.dart';
 import 'package:networking/networking/network_learning.dart';
 import 'package:networking/networking/network_listener.dart';
 
-import '../api/bean/error_response.dart';
-
 class LocalhostLearning extends NetworkLearning {
   @override
   checkCustomError(NetworkListener listener, ErrorModel error) {
@@ -35,7 +33,7 @@ class LocalhostLearning extends NetworkLearning {
       }
     } on NoSuchMethodError catch (e) {
       ErrorModel<StackTrace> error = new ErrorModel();
-      error.data = e.stackTrace;
+      error.data = e.stackTrace!;
       return sendError(listener, error);
     }
   }

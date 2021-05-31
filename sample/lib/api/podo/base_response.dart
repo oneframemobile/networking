@@ -1,3 +1,3 @@
-abstract class BaseResponse {
-  String errorMessage;
-}
+// abstract class BaseResponse {
+//   String errorMessage;
+// }

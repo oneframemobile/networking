@@ -4,7 +4,7 @@ import 'claim_response.dart';
 
 class ClaimListResponse implements SerializableList<ClaimResponse> {
   @override
-  List<ClaimResponse> list;
+  List<ClaimResponse>? list;
 
   @override
   List<ClaimResponse> fromJsonList(List json) {

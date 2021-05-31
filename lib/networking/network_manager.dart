@@ -18,7 +18,8 @@ class NetworkManager {
     this.config,
   });
 
-  GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType> get<ResponseType extends Serializable, ErrorType extends Serializable>({
+  GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>
+      get<ResponseType extends Serializable, ErrorType extends Serializable>({
     required String url,
     required ResponseType type,
     ErrorType? errorType,
@@ -29,7 +30,8 @@ class NetworkManager {
     bool isParse = false,
     bool asList = false,
   }) {
-    return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(MethodType.GET, learning!, config!)
+    return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(
+            MethodType.GET, learning!, config!)
         .url(url)
         .type(type)
         .errorType(errorType!)
@@ -41,7 +43,10 @@ class NetworkManager {
         .asList(asList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> post<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> post<
+      RequestType extends Serializable,
+      ResponseType extends Serializable,
+      ErrorType extends Serializable>({
     required String url,
     dynamic body,
     required ResponseType type,
@@ -53,19 +58,23 @@ class NetworkManager {
     bool isParse = false,
     bool isList = false,
   }) {
-    return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.POST, learning!, config!, body)
+    return GenericRequestObject<RequestType, ResponseType, ErrorType>(
+            MethodType.POST, learning!, config!, body)
         .url(url)
         .type(type)
         .errorType(errorType!)
         .listener(listener!)
-        .contentType(contentType!)
-        .addHeaders(headers!)
-        .timeout(timeout!)
+        .contentType(contentType)
+        .addHeaders(headers)
+        .timeout(timeout)
         .isParse(isParse)
         .asList(isList);
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> put<RequestType extends Serializable, ResponseType extends Serializable, ErrorType extends Serializable>({
+  GenericRequestObject<RequestType, ResponseType, ErrorType> put<
+      RequestType extends Serializable,
+      ResponseType extends Serializable,
+      ErrorType extends Serializable>({
     required String url,
     dynamic body,
     required ResponseType type,
@@ -77,7 +86,8 @@ class NetworkManager {
     bool isParse = false,
     bool isList = false,
   }) {
-    return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.PUT, learning!, config!, body)
+    return GenericRequestObject<RequestType, ResponseType, ErrorType>(
+            MethodType.PUT, learning!, config!, body)
         .url(url)
         .type(type)
         .errorType(errorType)
@@ -89,7 +99,8 @@ class NetworkManager {
         .isParse(isParse);
   }
 
-  GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType> delete<ResponseType extends Serializable, ErrorType extends Serializable>({
+  GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType> delete<
+      ResponseType extends Serializable, ErrorType extends Serializable>({
     required String url,
     required ResponseType type,
     required ErrorType errorType,
@@ -99,7 +110,8 @@ class NetworkManager {
     bool isList = false,
     bool isParse = false,
   }) {
-    return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(MethodType.DELETE, learning!, config!)
+    return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(
+            MethodType.DELETE, learning!, config!)
         .url(url)
         .type(type)
         .errorType(errorType)

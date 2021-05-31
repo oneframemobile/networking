@@ -1,7 +1,7 @@
 import 'package:networking/networking.dart';
 
 class ValidationErrors implements SerializableObject<ValidationErrors> {
-  String message;
+  String? message;
 
   ValidationErrors({this.message});
 
