@@ -81,7 +81,7 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> errorType(
-      ErrorType type) {
+      ErrorType? type) {
     _errorType = type;
     return this;
   }
@@ -154,7 +154,7 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> listener(
-      NetworkListener listener) {
+      NetworkListener? listener) {
     _listener = listener;
     return this;
   }
