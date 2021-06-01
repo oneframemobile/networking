@@ -28,10 +28,10 @@ void main() {
             errorType: ErrorResponse(),
             body: loginRequest,
             listener: new NetworkListener()
-              ..onSuccess((dynamic result) {
+              ..onSuccess((ResultModel result) {
                 expect(result.data, isInstanceOf<LoginResponse>());
               })
-              ..onError((dynamic error) {
+              ..onError((ErrorModel error) {
                 expect(error.data, isInstanceOf<Error>());
               }))
         .fetch();
