@@ -1,12 +1,12 @@
 import '../generic_request_object.dart';
 
 class ErrorModel<T> {
-  late T data;
-  late String description;
-  late int statusCode;
-  late String raw;
-  late NetworkErrorTypes type;
-  late GenericRequestObject request;
+  T? data;
+  String? description;
+  int? statusCode;
+  String? raw;
+  NetworkErrorTypes? type;
+  GenericRequestObject? request;
 
   ErrorModel();
 }
