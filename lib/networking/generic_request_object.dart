@@ -347,7 +347,7 @@ class GenericRequestObject<RequestType extends Serializable,
         if (_learning != null)
           return _learning!.checkSuccess<ResponseType>(_listener!, model);
         else {
-          _listener?.result!(model);
+          //_listener?.result!(model);
           return model;
         }
       } else {

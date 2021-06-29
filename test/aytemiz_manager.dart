@@ -2,9 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:networking/networking.dart';
 
 import 'api/bean/error_response.dart';
-import 'api/bean/request/login_request.dart';
-import 'api/bean/response/login_response.dart';
-import 'local/local_host_learning.dart';
 import 'local/model/campaign_request_model.dart';
 import 'local/model/campaign_response_model.dart';
 
@@ -23,45 +20,17 @@ void main() {
 
     final request = _manager
         .post<CampaignRequestModel, CampaignResponseModel, ErrorResponse>(
-      url: "Campaign/GetCampaigns",
-      type: CampaignResponseModel(),
-      errorType: ErrorResponse(),
-      body: campaignRequestModel,
-      isList: false,
-    );
+            url: "[14:44] Emre KarataşCampaign/GetCampaigns",
+            type: CampaignResponseModel(),
+            errorType: ErrorResponse(),
+            body: campaignRequestModel,
+            isList: false,
+            listener:
+                new NetworkListener<CampaignResponseModel, ErrorResponse>());
 
-    ResultModel<dynamic> aa = await request.fetch();
+    dynamic aa = await request.fetch();
     int a = 1;
   });
-/*   NetworkingFactory.init();
-  NetworkConfig _config = NetworkConfig();
-  NetworkManager _manager = NetworkingFactory.create(config: _config);
-  LocalhostLearning _learning = new LocalhostLearning();
-  _config.setBaseUrl("https://oneframe-livedemo-api.azurewebsites.net");
-  _config.addSuccessCodes(200, 205);
-  _manager.learning = _learning;
-
-  LoginRequest loginRequest = new LoginRequest(
-      email: "adminuser@kocsistem.com.tr", password: "1234567");
-  LoginRequest wrongPasswordLoginRequest = new LoginRequest(
-      email: "adminuser@kocsistem.com.tr", password: "123456777");
-
-  test('Wrong Password Login method test', () async {
-    await _manager
-        .post<LoginRequest, LoginResponse, ErrorResponse>(
-            url: "/accounts/login",
-            type: LoginResponse(),
-            errorType: ErrorResponse(),
-            body: loginRequest,
-            listener: new NetworkListener()
-              ..onSuccess((ResultModel result) {
-                expect(result.data, isInstanceOf<LoginResponse>());
-              })
-              ..onError((ErrorModel error) {
-                expect(error.data, isInstanceOf<Error>());
-              }))
-        .fetch();
-  }); */
 
   // String token =
   //     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMGNiMzNmMy01OTFhLTRhMjUtYWFiYS1iZDA1Zjc5NmI1ZmIiLCJ1bmlxdWVfbmFtZSI6ImFkbWludXNlckBrb2NzaXN0ZW0uY29tLnRyIiwianRpIjoiY2FhY2M5MDEtMDI5ZC00YzU3LWExOTMtZmI4ZDc5NTEzYjNhIiwiZW1haWwiOiJhZG1pbnVzZXJAa29jc2lzdGVtLmNvbS50ciIsImdpdmVuX25hbWUiOiJTY290IiwiZmFtaWx5X25hbWUiOiJMYXdzb24iLCJleHAiOjE2MDA5Mzk5NDUsImlzcyI6Ikp3dFNlcnZlciIsImF1ZCI6Ikp3dFNlcnZlciJ9.kOntnbCwiOD0gFp9CTSG8dSbpuYdAzRfVQfHepH2eC4";
