@@ -33,9 +33,13 @@ class NetworkCache {
     FileInfo? cached = await cache.getFileFromCache(options.optimizedKey);
     if (cached != null) {
       ResultModel model = ResultModel();
-      model.result = options.encrypted ? _decryptAsString(cached.file.readAsStringSync()) : cached.file.readAsStringSync();
-      model.bodyBytes = options.encrypted ? _decrypt(cached.file.readAsStringSync()) : cached.file.readAsBytesSync();
-      model.json = json.decode(model.result);
+      model.result = options.encrypted
+          ? _decryptAsString(cached.file.readAsStringSync())
+          : cached.file.readAsStringSync();
+      model.bodyBytes = options.encrypted
+          ? _decrypt(cached.file.readAsStringSync())
+          : cached.file.readAsBytesSync();
+      model.json = json.decode(model.result ?? "");
       model.url = uri.toString();
 
       if (isParse) {
@@ -45,10 +49,12 @@ class NetworkCache {
       var serializable;
 
       if (type is SerializableObject) {
-
         dynamic body = model.json;
         if (body is List)
-          model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
+          model.data = body
+              .map((data) => serializable.fromJson(data))
+              .cast<ResponseType>()
+              .toList();
         else if (body is Map)
           model.data = serializable.fromJson(body) as ResponseType;
         else
@@ -60,13 +66,13 @@ class NetworkCache {
           listener?.result!(model);
           return model;
         }
-      }
-
-      else if (type is SerializableList){
-
+      } else if (type is SerializableList) {
         dynamic body = model.json;
         if (body is List)
-          model.data = body.map((data) => serializable.fromJson(data)).cast<ResponseType>().toList();
+          model.data = body
+              .map((data) => serializable.fromJson(data))
+              .cast<ResponseType>()
+              .toList();
         else if (body is Map)
           model.data = serializable.fromJson(body) as ResponseType;
         else
@@ -78,8 +84,7 @@ class NetworkCache {
           listener?.result!(model);
           return model;
         }
-
-      }else
+      } else
         print("Type is neither SerializableList nor SerializableObject");
     }
   }

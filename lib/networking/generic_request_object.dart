@@ -311,7 +311,7 @@ class GenericRequestObject<RequestType extends Serializable,
           buffer.write(String.fromCharCodes(bytes));
 
           if (buffer.isNotEmpty) {
-            var body = json.decode(model.result);
+            var body = json.decode(model.result ?? "");
 
             if (_cache != null && _cache!.options.enabled) {
               _cache!.save(bytes: bytes, duration: _cache!.options.duration);
