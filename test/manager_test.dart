@@ -15,8 +15,8 @@ void main() {
   _config.addSuccessCodes(200, 205);
   _manager.learning = _learning;
 
-  LoginRequest loginRequest =
-      new LoginRequest(email: "adminuser@kocsistem.com.tr", password: "123456");
+  LoginRequest loginRequest = new LoginRequest(
+      email: "adminuser@kocsistem.com.tr", password: "1234567");
   LoginRequest wrongPasswordLoginRequest = new LoginRequest(
       email: "adminuser@kocsistem.com.tr", password: "123456777");
 
