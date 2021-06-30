@@ -318,10 +318,10 @@ class GenericRequestObject<RequestType extends Serializable,
             }
 
             if (_asList != null && !_asList!) {
-              var map = json.decode(buffer.toString());
+              //var map = json.decode(body);
               var serializable = (_type as SerializableObject);
-              model.data = serializable.fromJson(map);
-              model.json = map;
+              model.data = serializable.fromJson(body);
+              model.json = body;
             } else {
               Iterable iterable;
               if (_parseKey != null) {
