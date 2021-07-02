@@ -323,7 +323,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         }
       } else {
         buffer.write(String.fromCharCodes(bytes));
-        utf8.decode(bytes);
+
         await request.done;
         ErrorModel error = ErrorModel();
         error.description = response.reasonPhrase;
@@ -331,7 +331,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         error.raw = buffer.toString();
         if (buffer.isNotEmpty || buffer.toString().contains(":")) {
           try {
-            var errorMap = json.decode(buffer.toString());
+            var errorMap = json.decode(utf8.decode(bytes));
             var serializable = (_errorType as SerializableObject);
             error.data = serializable.fromJson(errorMap);
           } catch (e) {
