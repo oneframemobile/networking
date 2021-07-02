@@ -323,6 +323,7 @@ class GenericRequestObject<RequestType extends Serializable, ResponseType extend
         }
       } else {
         buffer.write(String.fromCharCodes(bytes));
+        utf8.decode(bytes);
         await request.done;
         ErrorModel error = ErrorModel();
         error.description = response.reasonPhrase;
