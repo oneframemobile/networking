@@ -371,10 +371,12 @@ class GenericRequestObject<RequestType extends Serializable,
 
         if (_learning != null)
           return _learning!.checkCustomError(_listener!, error);
-        else {
+        else if (_listener != null) {
           _listener?.error!(error);
           throw (error);
         }
+        else
+          return error;
       }
     } on SocketException catch (exception) {
       if (_cache != null &&
