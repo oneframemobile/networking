@@ -53,6 +53,9 @@ class GenericRequestObject<RequestType extends Serializable,
     _cookies = new Set();
     _timeout = Duration(seconds: 60);
     _isParse = false;
+    if (_config != null && _config!.parseKey != null) {
+      _parseKey = _config!.parseKey;
+    }
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> url(String url) {
@@ -320,7 +323,11 @@ class GenericRequestObject<RequestType extends Serializable,
             if (_asList != null && !_asList!) {
               //var map = json.decode(body);
               var serializable = (_type as SerializableObject);
-              model.data = serializable.fromJson(body);
+              if (_parseKey != null && _parseKey!.isNotEmpty)
+                model.data = serializable.fromJson(body[_parseKey]);
+              else
+                model.data = serializable.fromJson(body);
+
               model.json = body;
             } else {
               Iterable iterable;

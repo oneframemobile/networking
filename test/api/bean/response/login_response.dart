@@ -22,6 +22,6 @@ class LoginResponse implements SerializableObject<LoginResponse> {
 
   @override
   LoginResponse fromJson(Map<String, dynamic> json) {
-    return LoginResponse.fromJsonMap(json["result"]);
+    return LoginResponse.fromJsonMap(json);
   }
 }

@@ -6,6 +6,7 @@ class NetworkConfig {
   List<int> _successStatusCode = [];
 
   late String _baseUrl;
+  String? _parseKey;
 
   NetworkConfig addHeaders(Iterable<Header> iterable) {
     _headers.addAll(iterable);
@@ -40,6 +41,11 @@ class NetworkConfig {
     return this;
   }
 
+  NetworkConfig setParseKey(String parseKey) {
+    _parseKey = parseKey;
+    return this;
+  }
+
   Duration get timeout {
     return _timeout;
   }
@@ -50,6 +56,10 @@ class NetworkConfig {
 
   String get baseUrl {
     return _baseUrl;
+  }
+
+  String? get parseKey {
+    return _parseKey;
   }
 
   List<int> get successStatusCode {
