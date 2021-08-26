@@ -275,6 +275,20 @@ _config
 ```
 NetworkManager manager = NetworkingFactory.create(config: _config);
 ```
+
+### Cancel
+You can cancel ongoing request by calling ```GenericRequestObject<dynamic>.abort()``` function 
+
+```
+NetworkManager manager = NetworkingFactory.create();
+    var request = manager
+        .delete<DefaultResponse, ErrorResponse>(url: "/accounts/" + userMail, errorType: ErrorResponse(), type: DefaultResponse(), listener: listener)
+        .addHeader(Header("Authorization", "Bearer token");
+        
+    request.fetch();
+    request.abort();
+```
+
 ### SSL Pinning
 
 You can use certificates which has .cer extension. Make sure put your .cer file in assets resource folder.

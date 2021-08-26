@@ -20,7 +20,7 @@ void main() {
 
     final request = _manager
         .post<CampaignRequestModel, CampaignResponseModel, ErrorResponse>(
-            url: "[14:44] Emre KarataşCampaign/GetCampaigns",
+            url: "Campaign/GetCampaigns",
             type: CampaignResponseModel(),
             errorType: ErrorResponse(),
             body: campaignRequestModel,
@@ -28,8 +28,8 @@ void main() {
             listener:
                 new NetworkListener<CampaignResponseModel, ErrorResponse>());
 
-    dynamic aa = await request.fetch();
-    int a = 1;
+    Future.delayed(Duration(seconds: 1)).then((value) => request.cancel());
+    dynamic result = await request.fetch();
   });
 
   // String token =
