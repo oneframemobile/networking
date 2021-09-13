@@ -37,11 +37,10 @@ class GenericRequestObject<RequestType extends Serializable,
   bool? _isParse;
   String? body;
   NetworkCache? _cache;
-  HttpClientRequest? _ongoing;
 
   final RequestId id = new RequestId();
 
-  bool? _asList;
+  bool? _isList;
   String? _parseKey;
 
   GenericRequestObject(
@@ -67,9 +66,9 @@ class GenericRequestObject<RequestType extends Serializable,
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> asList(
-      bool asList) {
-    _asList = asList;
+  GenericRequestObject<RequestType, ResponseType, ErrorType> isList(
+      bool isList) {
+    _isList = isList;
     return this;
   }
 
@@ -227,16 +226,16 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   Future<dynamic> fetch() async {
-    _ongoing = await _request();
+    var request = await _request();
     try {
-      _cookies?.forEach((cookie) => _ongoing!.cookies.add(cookie));
+      _cookies?.forEach((cookie) => request.cookies.add(cookie));
       if (_headers != null) {
         _headers?.forEach(
-            (header) => _ongoing!.headers.add(header.key, header.value));
+            (header) => request.headers.add(header.key, header.value));
       }
 
       if (_methodType == MethodType.POST || _methodType == MethodType.PUT) {
-        _ongoing!.headers.add(
+        request.headers.add(
           HttpHeaders.contentTypeHeader,
           _contentType == null
               ? ContentType.json.toString()
@@ -246,7 +245,7 @@ class GenericRequestObject<RequestType extends Serializable,
           var model = json.encode(_body);
           var utf8Length = utf8.encode(model).length;
 
-          _ongoing!.headers.contentLength = utf8Length;
+          request.headers.contentLength = utf8Length;
 
           if (_body is List) {
             if (_body.first is SerializableObject) {
@@ -254,7 +253,7 @@ class GenericRequestObject<RequestType extends Serializable,
                   .map((SerializableObject item) => item.toJson())
                   .toList();
               var jsonMapList = json.encode(mapList);
-              _ongoing!.write(jsonMapList);
+              request.write(jsonMapList);
               body = jsonMapList;
             } else {
               throw ErrorDescription(
@@ -262,11 +261,11 @@ class GenericRequestObject<RequestType extends Serializable,
             }
           } else {
             body = model;
-            _ongoing!.write(body);
+            request.write(body);
           }
         } else if (body != null && body!.isNotEmpty) {
-          _ongoing!.headers.contentLength = utf8.encode(body!).length;
-          _ongoing!.write(body);
+          request.headers.contentLength = utf8.encode(body!).length;
+          request.write(body);
         }
       }
 
@@ -284,7 +283,7 @@ class GenericRequestObject<RequestType extends Serializable,
         );
       }
 
-      var response = await _ongoing!.close().timeout(
+      var response = await request.close().timeout(
         (_config != null
             ? _config!.timeout
             : _timeout == null
@@ -311,11 +310,11 @@ class GenericRequestObject<RequestType extends Serializable,
         try {
           model.result = utf8.decode(bytes);
           if (_isParse != null && _isParse!) {
-            await _ongoing!.done;
+            await request.done;
             return _learning?.checkSuccess<ResponseType>(_listener!, model);
           }
 
-          buffer.write(String.fromCharCodes(bytes));
+          buffer.write(utf8.decode(bytes));
 
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result ?? "");
@@ -324,7 +323,7 @@ class GenericRequestObject<RequestType extends Serializable,
               _cache!.save(bytes: bytes, duration: _cache!.options.duration);
             }
 
-            if (_asList != null && !_asList!) {
+            if (_isList != null && !_isList!) {
               //var map = json.decode(body);
               var serializable = (_type as SerializableObject);
               if (_parseKey != null && _parseKey!.isNotEmpty)
@@ -354,7 +353,7 @@ class GenericRequestObject<RequestType extends Serializable,
           print(e);
         }
 
-        await _ongoing!.done;
+        await request.done;
         if (_learning != null)
           return _learning!.checkSuccess<ResponseType>(_listener!, model);
         else {
@@ -364,7 +363,7 @@ class GenericRequestObject<RequestType extends Serializable,
       } else {
         buffer.write(String.fromCharCodes(bytes));
 
-        await _ongoing!.done;
+        await request.done;
         ErrorModel error = ErrorModel();
         error.description = response.reasonPhrase;
         error.statusCode = response.statusCode;
@@ -400,13 +399,13 @@ class GenericRequestObject<RequestType extends Serializable,
       }
 
       return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR,
-          request: _ongoing!);
+          request: request);
     } on TimeoutException catch (exception) {
       return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
-          request: _ongoing!);
+          request: request);
     } catch (exception) {
       return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
-          request: _ongoing!);
+          request: request);
     }
   }
 
@@ -435,10 +434,6 @@ class GenericRequestObject<RequestType extends Serializable,
 
   void enqueue() {
     NetworkQueue.instance.add(this);
-  }
-
-  void cancel() {
-    _ongoing?.abort();
   }
 
   @override

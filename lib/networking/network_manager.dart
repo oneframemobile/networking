@@ -28,7 +28,7 @@ class NetworkManager {
     Iterable<Header>? headers,
     Duration? timeout,
     bool isParse = false,
-    bool asList = false,
+    bool isList = false,
   }) {
     return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(
             MethodType.GET, learning, config!)
@@ -40,7 +40,7 @@ class NetworkManager {
         .addHeaders(headers)
         .timeout(timeout)
         .isParse(isParse)
-        .asList(asList);
+        .isList(isList);
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> post<
@@ -68,7 +68,7 @@ class NetworkManager {
         .addHeaders(headers)
         .timeout(timeout)
         .isParse(isParse)
-        .asList(isList);
+        .isList(isList);
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType> put<
@@ -95,7 +95,7 @@ class NetworkManager {
         .contentType(contentType)
         .addHeaders(headers)
         .timeout(timeout)
-        .asList(isList)
+        .isList(isList)
         .isParse(isParse);
   }
 
@@ -118,7 +118,7 @@ class NetworkManager {
         .listener(listener)
         .addHeaders(headers)
         .timeout(timeout)
-        .asList(isList)
+        .isList(isList)
         .isParse(isParse);
   }
 }
