@@ -41,7 +41,7 @@ class GenericRequestObject<RequestType extends Serializable,
 
   final RequestId id = new RequestId();
 
-  bool? _asList;
+  bool? _isList;
   String? _parseKey;
 
   GenericRequestObject(
@@ -67,9 +67,9 @@ class GenericRequestObject<RequestType extends Serializable,
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> asList(
-      bool asList) {
-    _asList = asList;
+  GenericRequestObject<RequestType, ResponseType, ErrorType> isList(
+      bool isList) {
+    _isList = isList;
     return this;
   }
 
@@ -315,7 +315,7 @@ class GenericRequestObject<RequestType extends Serializable,
             return _learning?.checkSuccess<ResponseType>(_listener!, model);
           }
 
-          buffer.write(String.fromCharCodes(bytes));
+          buffer.write(utf8.decode(bytes));
 
           if (buffer.isNotEmpty) {
             var body = json.decode(model.result ?? "");
@@ -324,7 +324,7 @@ class GenericRequestObject<RequestType extends Serializable,
               _cache!.save(bytes: bytes, duration: _cache!.options.duration);
             }
 
-            if (_asList != null && !_asList!) {
+            if (_isList != null && !_isList!) {
               //var map = json.decode(body);
               var serializable = (_type as SerializableObject);
               if (_parseKey != null && _parseKey!.isNotEmpty)

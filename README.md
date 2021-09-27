@@ -150,7 +150,7 @@ You are able to customize each request with chain methods.
         .post<RegisterRequest, RegisterResponse, ErrorResponse>(
             url: "/accounts/register", type: RegisterResponse(), body: registerRequest, errorType: ErrorResponse(), listener: listener)
         .addHeader(BaseApiHelper.getInstance().tokenHeader)
-        .asList(true)
+        .isList(true)
         .parseKey("result")
         .query("userId", "10")
         .path("register")
