@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:networking/networking.dart';
+import 'package:networking/networking/network_cancellation.dart';
 
 import 'api/bean/error_response.dart';
+import 'api/bean/request/login_request.dart';
+import 'api/bean/response/login_response.dart';
 import 'local/model/campaign_request_model.dart';
 import 'local/model/campaign_response_model.dart';
 
@@ -18,18 +21,18 @@ void main() {
     CampaignRequestModel campaignRequestModel = CampaignRequestModel();
     campaignRequestModel.categoryId = 1;
 
-    final request = _manager
-        .post<CampaignRequestModel, CampaignResponseModel, ErrorResponse>(
-            url: "Campaign/GetCampaigns",
-            type: CampaignResponseModel(),
-            errorType: ErrorResponse(),
-            body: campaignRequestModel,
-            isList: false,
-            listener:
-                new NetworkListener<CampaignResponseModel, ErrorResponse>());
+    final request = _manager.post<CampaignRequestModel, CampaignResponseModel, ErrorResponse>(
+        url: "Campaign/GetCampaigns",
+        type: CampaignResponseModel(),
+        errorType: ErrorResponse(),
+        body: campaignRequestModel,
+        isList: false,
+        tag: "Hello",
+        listener: NetworkListener<CampaignResponseModel, ErrorResponse>());
 
-    Future.delayed(Duration(seconds: 1)).then((value) => request.cancel());
-    dynamic result = await request.fetch();
+    request.fetch().then((value) => print(value));
+    NetworkCancellation.getInstance().cancelAll();
+    await Future.delayed(Duration(seconds: 5));
   });
 
   // String token =
@@ -94,23 +97,23 @@ void main() {
   //       .fetch();
   // });
 
-  // test('Success Login method test', () async {
-  //   await _manager
-  //       .post<LoginRequest, LoginResponse, ErrorResponse>(
-  //           url: "/accounts/login",
-  //           type: LoginResponse(),
-  //           errorType: ErrorResponse(),
-  //           body: loginRequest,
-  //           listener: new NetworkListener()
-  //             ..onSuccess((dynamic result) {
-  //               token = result.data.token;
-  //               expect(result.data, isInstanceOf<LoginResponse>());
-  //             })
-  //             ..onError((dynamic error) {
-  //               //expect(error.data, isInstanceOf<Error>());
-  //             }))
-  //       .fetch();
-  // });
+  test('Success Login method test', () async {
+    await _manager
+        .post<LoginRequest, LoginResponse, ErrorResponse>(
+            url: "/accounts/login",
+            type: LoginResponse(),
+            errorType: ErrorResponse(),
+            body: LoginRequest(email: "", password: "password"),
+            listener: new NetworkListener()
+              ..onSuccess((dynamic result) {
+                final token = result.data.token;
+                expect(result.data, isInstanceOf<LoginResponse>());
+              })
+              ..onError((dynamic error) {
+                expect(error.data, isInstanceOf<Error>());
+              }))
+        .fetch();
+  });
 
   // test('Success GetUserInfo method test', () async {
   //   await _manager
