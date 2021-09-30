@@ -1,7 +1,5 @@
 import 'package:networking/networking.dart';
 
-import 'validation_errors.dart';
-
 class Error implements SerializableObject<Error> {
   String? correlationId;
   int? code;

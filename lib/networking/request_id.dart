@@ -12,6 +12,11 @@ class RequestId {
 
   @override
   int get hashCode => _guid.hashCode;
+
+  @override
+  String toString() {
+    return _guid.toString();
+  }
 }
 
 class _GUID {
@@ -43,4 +48,9 @@ class _GUID {
 
   @override
   int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return value ?? "Unknown";
+  }
 }
