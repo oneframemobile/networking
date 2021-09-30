@@ -277,8 +277,7 @@ NetworkManager manager = NetworkingFactory.create(config: _config);
 ```
 
 ### Cancel
-You can cancel ongoing request by calling ```GenericRequestObject<dynamic>.abort()``` function 
-
+You can cancel ongoing request by calling ```GenericRequestObject<dynamic>.cancel()``` function
 ```
 NetworkManager manager = NetworkingFactory.create();
     var request = manager
@@ -286,9 +285,31 @@ NetworkManager manager = NetworkingFactory.create();
         .addHeader(Header("Authorization", "Bearer token");
         
     request.fetch();
-    request.abort();
+    request.cancel();
 ```
 
+You can also cancel ongoing request by tagging ```NetworkCancellation.getInstance().cancel(tag: "MyTag"")``` function
+```
+_manager.post<CampaignRequestModel, CampaignResponseModel, ErrorResponse>(
+        url: "Campaign/GetCampaigns",
+        type: CampaignResponseModel(),
+        errorType: ErrorResponse(),
+        body: campaignRequestModel,
+        isList: false,
+        tag: "Hello",
+        listener: NetworkListener<CampaignResponseModel, ErrorResponse>());
+        
+NetworkCancellation
+    .getInstance()
+    .cancel(tag: "Hello");
+```
+Or just cancel all.
+
+```
+NetworkCancellation
+    .getInstance()
+    .cancelAll();
+```
 ### SSL Pinning
 
 You can use certificates which has .cer extension. Make sure put your .cer file in assets resource folder.
