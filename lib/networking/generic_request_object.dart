@@ -136,8 +136,10 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   GenericRequestObject<RequestType, ResponseType, ErrorType>
-      addHeaderWithParameters(String key, String value) {
-    var header = new Header(key, value);
+      addHeaderWithParameters(
+          String key, String value, bool preserveHeaderCase) {
+    var header = new Header(
+        key: key, value: value, preserveHeaderCase: preserveHeaderCase);
     _headers?.add(header);
     return this;
   }
@@ -231,8 +233,9 @@ class GenericRequestObject<RequestType extends Serializable,
     try {
       _cookies?.forEach((cookie) => _ongoing!.cookies.add(cookie));
       if (_headers != null) {
-        _headers?.forEach(
-            (header) => _ongoing!.headers.add(header.key, header.value));
+        _headers?.forEach((header) => _ongoing!.headers.add(
+            header.key, header.value,
+            preserveHeaderCase: header.preserveHeaderCase ?? false));
       }
 
       if (_methodType == MethodType.POST || _methodType == MethodType.PUT) {

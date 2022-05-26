@@ -26,7 +26,7 @@ class NetworkConfig {
   }
 
   NetworkConfig addHeaderWithParameters(String key, String value) {
-    var header = new Header(key, value);
+    var header = new Header(key: key, value: value);
     _headers.add(header);
     return this;
   }

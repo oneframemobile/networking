@@ -1,4 +1,4 @@
-import 'package:networking/networking.dart';
+/* import 'package:networking/networking.dart';
 import 'package:sample/api/validation_errors.dart';
 
 class Error implements SerializableObject<Error> {
@@ -46,3 +46,4 @@ class Error implements SerializableObject<Error> {
     return Error.fromJson(json);
   }
 }
+ */
