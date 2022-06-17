@@ -30,6 +30,7 @@ void main() {
             url: "/Notification/GetNotificationList",
             type: OtokarNotificationResponseModel(),
             errorType: ErrorResponse(),
+            isList: true,
             listener: new NetworkListener()
               ..onSuccess((dynamic result) {
                 expect(result, isInstanceOf<OtokarNotificationResponseModel>());

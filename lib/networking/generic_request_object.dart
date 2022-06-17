@@ -235,7 +235,7 @@ class GenericRequestObject<RequestType extends Serializable,
       if (_headers != null) {
         _headers?.forEach((header) => _ongoing!.headers.add(
             header.key, header.value,
-            preserveHeaderCase: header.preserveHeaderCase ?? false));
+            preserveHeaderCase: header.preserveHeaderCase));
       }
 
       if (_methodType == MethodType.POST || _methodType == MethodType.PUT) {

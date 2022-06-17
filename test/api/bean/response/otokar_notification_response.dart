@@ -1,7 +1,8 @@
+import 'package:networking/networking/serializable_list.dart';
 import 'package:networking/networking/serializable_object.dart';
 
 class OtokarNotificationResponseModel
-    extends SerializableObject<OtokarNotificationResponseModel> {
+    extends SerializableList<OtokarNotificationResponseModel> {
   String? description;
   String? categoryName;
   String? url;
@@ -62,7 +63,14 @@ class OtokarNotificationResponseModel
   }
 
   @override
-  OtokarNotificationResponseModel fromJson(Map<String, dynamic> json) {
-    return OtokarNotificationResponseModel.fromJson(json);
+  List<OtokarNotificationResponseModel> fromJsonList(List json) {
+    return json
+        .map((e) => OtokarNotificationResponseModel.fromJson(e))
+        .toList();
+  }
+
+  @override
+  List<Map<String, dynamic>> toJsonList() {
+    return [];
   }
 }
