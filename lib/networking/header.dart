@@ -1,8 +1,11 @@
 class Header {
   String key;
   String value;
-  bool? preserveHeaderCase = false;
-  Header({required this.key, required this.value, this.preserveHeaderCase});
+  bool preserveHeaderCase;
+  Header(
+      {required this.key,
+      required this.value,
+      this.preserveHeaderCase = false});
 
   @override
   bool operator ==(Object other) =>
