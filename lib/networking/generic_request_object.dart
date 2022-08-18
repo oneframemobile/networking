@@ -46,7 +46,7 @@ class GenericRequestObject<RequestType extends Serializable,
   final RequestId id = new RequestId();
 
   bool? _isList;
-  String? _parseKey;
+  Set<String>? _parseKeys;
 
   GenericRequestObject(
     this._methodType,
@@ -56,10 +56,11 @@ class GenericRequestObject<RequestType extends Serializable,
   ]) {
     _headers = new Set();
     _cookies = new Set();
+    _parseKeys = new Set();
     _timeout = Duration(seconds: 60);
     _isParse = false;
-    if (_config != null && _config!.parseKey != null) {
-      _parseKey = _config!.parseKey;
+    if (_config != null && _config!.parseKeys.length > 0) {
+      _parseKeys = _config!.parseKeys;
     }
     if (_config != null && _config!.headers.length > 0) {
       _headers?.addAll(_config!.headers);
@@ -79,9 +80,9 @@ class GenericRequestObject<RequestType extends Serializable,
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> parseKey(
-      String parseKey) {
-    _parseKey = parseKey;
+  GenericRequestObject<RequestType, ResponseType, ErrorType> parseKeys(
+      Set<String> parseKeys) {
+    _parseKeys = parseKeys;
     return this;
   }
 
@@ -342,16 +343,29 @@ class GenericRequestObject<RequestType extends Serializable,
             if (_isList != null && !_isList!) {
               //var map = json.decode(body);
               var serializable = (_type as SerializableObject);
-              if (_parseKey != null && _parseKey!.isNotEmpty)
-                model.data = serializable.fromJson(body[_parseKey]);
-              else
+              if (_parseKeys != null && _parseKeys!.length > 0) {
+                for (var i = 0; i < _parseKeys!.length; i++) {
+                  var parseKey = _parseKeys!.elementAt(i);
+                  if (body[parseKey] != null) {
+                    model.data = serializable.fromJson(body[parseKey]);
+                    break;
+                  }
+                }
+              } else
                 model.data = serializable.fromJson(body);
 
               model.json = body;
             } else {
-              Iterable iterable;
-              if (_parseKey != null) {
-                iterable = json.decode(buffer.toString())[_parseKey];
+              Iterable iterable = [];
+
+              if (_parseKeys != null && _parseKeys!.length > 0) {
+                for (var i = 0; i < _parseKeys!.length; i++) {
+                  var parseKey = _parseKeys!.elementAt(i);
+                  if (body[parseKey] != null) {
+                    iterable = json.decode(buffer.toString())[parseKey];
+                    break;
+                  }
+                }
               } else {
                 iterable = json.decode(buffer.toString());
               }
