@@ -449,7 +449,7 @@ class GenericRequestObject<RequestType extends Serializable,
       }
 
       return customErrorHandler(
-          exception.toString(), NetworkErrorTypes.SOCKET_ERROR);
+          new Exception(exception.toString()), NetworkErrorTypes.SOCKET_ERROR);
     } on TimeoutException catch (exception) {
       return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
     } catch (exception) {
