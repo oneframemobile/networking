@@ -376,6 +376,10 @@ class GenericRequestObject<RequestType extends Serializable,
               model.jsonList = iterable;
             }
           }
+        } on TypeError catch (exception) {
+          return customErrorHandler(
+              Exception(exception.toString()), NetworkErrorTypes.PARSE_ERROR,
+              request: request);
         } catch (e) {
           String s = String.fromCharCodes(bytes);
           model.bodyBytes = new Uint8List.fromList(s.codeUnits);
@@ -390,6 +394,23 @@ class GenericRequestObject<RequestType extends Serializable,
           //_listener?.result!(model);
           return model;
         }
+      } else if (response.statusCode == HttpStatus.unauthorized) {
+        return customErrorHandler(
+            response.reasonPhrase, NetworkErrorTypes.AUTH_FAILURE_ERROR,
+            request: request);
+      } else if (response.statusCode == HttpStatus.serviceUnavailable) {
+        return customErrorHandler(
+            response.reasonPhrase, NetworkErrorTypes.SERVER_ERROR,
+            request: request);
+      } else if (response.statusCode == HttpStatus.clientClosedRequest) {
+        return customErrorHandler(
+            response.reasonPhrase, NetworkErrorTypes.CLIENT_ERROR,
+            request: request);
+      } else if (response.statusCode ==
+          HttpStatus.networkAuthenticationRequired) {
+        return customErrorHandler(
+            response.reasonPhrase, NetworkErrorTypes.NETWORK_ERROR,
+            request: request);
       } else {
         buffer.write(String.fromCharCodes(bytes));
 
@@ -428,7 +449,8 @@ class GenericRequestObject<RequestType extends Serializable,
         );
       }
 
-      return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR,
+      return customErrorHandler(
+          exception.toString(), NetworkErrorTypes.SOCKET_ERROR,
           request: request);
     } on TimeoutException catch (exception) {
       return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
@@ -510,4 +532,5 @@ enum NetworkErrorTypes {
   NETWORK_ERROR,
   PARSE_ERROR,
   CLIENT_ERROR,
+  SOCKET_ERROR,
 }
