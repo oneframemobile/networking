@@ -243,9 +243,8 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   Future<dynamic> _call() async {
-    final request = await _request();
-
     try {
+      final request = await _request();
       _cookies?.forEach((cookie) => request.cookies.add(cookie));
       if (_headers != null) {
         _headers?.forEach((header) => request.headers.add(
@@ -450,14 +449,11 @@ class GenericRequestObject<RequestType extends Serializable,
       }
 
       return customErrorHandler(
-          exception.toString(), NetworkErrorTypes.SOCKET_ERROR,
-          request: request);
+          exception.toString(), NetworkErrorTypes.SOCKET_ERROR);
     } on TimeoutException catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
-          request: request);
+      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
     } catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
-          request: request);
+      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
     }
   }
 
