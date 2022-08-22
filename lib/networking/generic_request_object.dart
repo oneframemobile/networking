@@ -377,7 +377,7 @@ class GenericRequestObject<RequestType extends Serializable,
           }
         } on TypeError catch (exception) {
           return customErrorHandler(
-              Exception(exception.toString()), NetworkErrorTypes.PARSE_ERROR,
+              Exception(exception.toString()), NetworkErrorType.PARSE_ERROR,
               request: request);
         } catch (e) {
           String s = String.fromCharCodes(bytes);
@@ -394,21 +394,21 @@ class GenericRequestObject<RequestType extends Serializable,
           return model;
         }
       } else if (response.statusCode == HttpStatus.unauthorized) {
-        return customErrorHandler(
-            response.reasonPhrase, NetworkErrorTypes.AUTH_FAILURE_ERROR,
+        return customErrorHandler(Exception(response.reasonPhrase),
+            NetworkErrorType.AUTH_FAILURE_ERROR,
             request: request);
       } else if (response.statusCode == HttpStatus.serviceUnavailable) {
         return customErrorHandler(
-            response.reasonPhrase, NetworkErrorTypes.SERVER_ERROR,
+            Exception(response.reasonPhrase), NetworkErrorType.SERVER_ERROR,
             request: request);
       } else if (response.statusCode == HttpStatus.clientClosedRequest) {
         return customErrorHandler(
-            response.reasonPhrase, NetworkErrorTypes.CLIENT_ERROR,
+            Exception(response.reasonPhrase), NetworkErrorType.CLIENT_ERROR,
             request: request);
       } else if (response.statusCode ==
           HttpStatus.networkAuthenticationRequired) {
         return customErrorHandler(
-            response.reasonPhrase, NetworkErrorTypes.NETWORK_ERROR,
+            Exception(response.reasonPhrase), NetworkErrorType.NETWORK_ERROR,
             request: request);
       } else {
         buffer.write(String.fromCharCodes(bytes));
@@ -449,11 +449,11 @@ class GenericRequestObject<RequestType extends Serializable,
       }
 
       return customErrorHandler(
-          new Exception(exception.toString()), NetworkErrorTypes.SOCKET_ERROR);
+          new Exception(exception.toString()), NetworkErrorType.SOCKET_ERROR);
     } on TimeoutException catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
+      return customErrorHandler(exception, NetworkErrorType.TIMEOUT_ERROR);
     } catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR);
+      return customErrorHandler(exception, NetworkErrorType.TIMEOUT_ERROR);
     }
   }
 
@@ -477,12 +477,12 @@ class GenericRequestObject<RequestType extends Serializable,
         .toList();
   }
 
-  Future<void> customErrorHandler(exception, NetworkErrorTypes types,
+  Future<void> customErrorHandler(exception, NetworkErrorType type,
       {HttpClientRequest? request}) async {
     await request?.done;
     ErrorModel error = ErrorModel();
     error.description = exception.message;
-    error.type = types;
+    error.type = type;
     error.request = this;
 
     _listener?.error!(error);
@@ -520,7 +520,7 @@ enum MethodType {
   UPDATE,
 }
 
-enum NetworkErrorTypes {
+enum NetworkErrorType {
   NO_CONNECTION_ERROR,
   TIMEOUT_ERROR,
   AUTH_FAILURE_ERROR,
