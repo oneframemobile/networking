@@ -446,11 +446,7 @@ class GenericRequestObject<RequestType extends Serializable,
           listener: _listener,
           type: _type,
         );
-      }
-      if (exception.osError?.errorCode == 8) {
-        return customErrorHandler(new Exception(exception.toString()),
-            NetworkErrorType.NETWORK_ERROR);
-      }
+      } 
       return customErrorHandler(
           new Exception(exception.toString()), NetworkErrorType.SOCKET_ERROR);
     } on TimeoutException catch (exception) {
