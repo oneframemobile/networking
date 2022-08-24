@@ -151,7 +151,7 @@ You are able to customize each request with chain methods.
             url: "/accounts/register", type: RegisterResponse(), body: registerRequest, errorType: ErrorResponse(), listener: listener)
         .addHeader(BaseApiHelper.getInstance().tokenHeader)
         .isList(true)
-        .parseKey("result")
+        .parseKeys(["result","applicatonError"])
         .query("userId", "10")
         .path("register")
         .timeout(new Duration(mins : 1))

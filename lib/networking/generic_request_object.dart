@@ -46,7 +46,7 @@ class GenericRequestObject<RequestType extends Serializable,
   final RequestId id = new RequestId();
 
   bool? _isList;
-  String? _parseKey;
+  Set<String>? _parseKeys;
 
   GenericRequestObject(
     this._methodType,
@@ -56,10 +56,11 @@ class GenericRequestObject<RequestType extends Serializable,
   ]) {
     _headers = new Set();
     _cookies = new Set();
+    _parseKeys = new Set();
     _timeout = Duration(seconds: 60);
     _isParse = false;
-    if (_config != null && _config!.parseKey != null) {
-      _parseKey = _config!.parseKey;
+    if (_config != null && _config!.parseKeys.length > 0) {
+      _parseKeys = _config!.parseKeys;
     }
     if (_config != null && _config!.headers.length > 0) {
       _headers?.addAll(_config!.headers);
@@ -79,9 +80,9 @@ class GenericRequestObject<RequestType extends Serializable,
     return this;
   }
 
-  GenericRequestObject<RequestType, ResponseType, ErrorType> parseKey(
-      String parseKey) {
-    _parseKey = parseKey;
+  GenericRequestObject<RequestType, ResponseType, ErrorType> parseKeys(
+      Set<String> parseKeys) {
+    _parseKeys = parseKeys;
     return this;
   }
 
@@ -242,9 +243,8 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   Future<dynamic> _call() async {
-    final request = await _request();
-
     try {
+      final request = await _request();
       _cookies?.forEach((cookie) => request.cookies.add(cookie));
       if (_headers != null) {
         _headers?.forEach((header) => request.headers.add(
@@ -342,16 +342,29 @@ class GenericRequestObject<RequestType extends Serializable,
             if (_isList != null && !_isList!) {
               //var map = json.decode(body);
               var serializable = (_type as SerializableObject);
-              if (_parseKey != null && _parseKey!.isNotEmpty)
-                model.data = serializable.fromJson(body[_parseKey]);
-              else
+              if (_parseKeys != null && _parseKeys!.length > 0) {
+                for (var i = 0; i < _parseKeys!.length; i++) {
+                  var parseKey = _parseKeys!.elementAt(i);
+                  if (body[parseKey] != null) {
+                    model.data = serializable.fromJson(body[parseKey]);
+                    break;
+                  }
+                }
+              } else
                 model.data = serializable.fromJson(body);
 
               model.json = body;
             } else {
-              Iterable iterable;
-              if (_parseKey != null) {
-                iterable = json.decode(buffer.toString())[_parseKey];
+              Iterable iterable = [];
+
+              if (_parseKeys != null && _parseKeys!.length > 0) {
+                for (var i = 0; i < _parseKeys!.length; i++) {
+                  var parseKey = _parseKeys!.elementAt(i);
+                  if (body[parseKey] != null) {
+                    iterable = json.decode(buffer.toString())[parseKey];
+                    break;
+                  }
+                }
               } else {
                 iterable = json.decode(buffer.toString());
               }
@@ -362,6 +375,10 @@ class GenericRequestObject<RequestType extends Serializable,
               model.jsonList = iterable;
             }
           }
+        } on TypeError catch (exception) {
+          return customErrorHandler(
+              Exception(exception.toString()), NetworkErrorType.PARSE_ERROR,
+              request: request);
         } catch (e) {
           String s = String.fromCharCodes(bytes);
           model.bodyBytes = new Uint8List.fromList(s.codeUnits);
@@ -376,6 +393,23 @@ class GenericRequestObject<RequestType extends Serializable,
           //_listener?.result!(model);
           return model;
         }
+      } else if (response.statusCode == HttpStatus.unauthorized) {
+        return customErrorHandler(Exception(response.reasonPhrase),
+            NetworkErrorType.AUTH_FAILURE_ERROR,
+            request: request);
+      } else if (response.statusCode == HttpStatus.serviceUnavailable) {
+        return customErrorHandler(
+            Exception(response.reasonPhrase), NetworkErrorType.SERVER_ERROR,
+            request: request);
+      } else if (response.statusCode == HttpStatus.clientClosedRequest) {
+        return customErrorHandler(
+            Exception(response.reasonPhrase), NetworkErrorType.CLIENT_ERROR,
+            request: request);
+      } else if (response.statusCode ==
+          HttpStatus.networkAuthenticationRequired) {
+        return customErrorHandler(
+            Exception(response.reasonPhrase), NetworkErrorType.NETWORK_ERROR,
+            request: request);
       } else {
         buffer.write(String.fromCharCodes(bytes));
 
@@ -412,16 +446,13 @@ class GenericRequestObject<RequestType extends Serializable,
           listener: _listener,
           type: _type,
         );
-      }
-
-      return customErrorHandler(exception, NetworkErrorTypes.NETWORK_ERROR,
-          request: request);
+      } 
+      return customErrorHandler(
+          new Exception(exception.toString()), NetworkErrorType.SOCKET_ERROR);
     } on TimeoutException catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
-          request: request);
+      return customErrorHandler(exception, NetworkErrorType.TIMEOUT_ERROR);
     } catch (exception) {
-      return customErrorHandler(exception, NetworkErrorTypes.TIMEOUT_ERROR,
-          request: request);
+      return customErrorHandler(exception, NetworkErrorType.TIMEOUT_ERROR);
     }
   }
 
@@ -445,12 +476,12 @@ class GenericRequestObject<RequestType extends Serializable,
         .toList();
   }
 
-  Future<void> customErrorHandler(exception, NetworkErrorTypes types,
+  Future<void> customErrorHandler(exception, NetworkErrorType type,
       {HttpClientRequest? request}) async {
     await request?.done;
     ErrorModel error = ErrorModel();
     error.description = exception.message;
-    error.type = types;
+    error.type = type;
     error.request = this;
 
     _listener?.error!(error);
@@ -488,7 +519,7 @@ enum MethodType {
   UPDATE,
 }
 
-enum NetworkErrorTypes {
+enum NetworkErrorType {
   NO_CONNECTION_ERROR,
   TIMEOUT_ERROR,
   AUTH_FAILURE_ERROR,
@@ -496,4 +527,5 @@ enum NetworkErrorTypes {
   NETWORK_ERROR,
   PARSE_ERROR,
   CLIENT_ERROR,
+  SOCKET_ERROR,
 }
