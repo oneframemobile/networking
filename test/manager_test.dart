@@ -13,7 +13,7 @@ void main() {
   LocalhostLearning _learning = new LocalhostLearning();
   _config.setBaseUrl("https://oneframe-livedemo-api.azurewebsites.net");
   _config.addSuccessCodes(200, 205);
-  _config.setParseKey("result");
+  _config.setParseKey(["result"]);
   _manager.learning = _learning;
 
   LoginRequest loginRequest =
@@ -37,7 +37,6 @@ void main() {
               }))
         .fetch();
   });
-
   // String token =
   //     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMGNiMzNmMy01OTFhLTRhMjUtYWFiYS1iZDA1Zjc5NmI1ZmIiLCJ1bmlxdWVfbmFtZSI6ImFkbWludXNlckBrb2NzaXN0ZW0uY29tLnRyIiwianRpIjoiY2FhY2M5MDEtMDI5ZC00YzU3LWExOTMtZmI4ZDc5NTEzYjNhIiwiZW1haWwiOiJhZG1pbnVzZXJAa29jc2lzdGVtLmNvbS50ciIsImdpdmVuX25hbWUiOiJTY290IiwiZmFtaWx5X25hbWUiOiJMYXdzb24iLCJleHAiOjE2MDA5Mzk5NDUsImlzcyI6Ikp3dFNlcnZlciIsImF1ZCI6Ikp3dFNlcnZlciJ9.kOntnbCwiOD0gFp9CTSG8dSbpuYdAzRfVQfHepH2eC4";
 
