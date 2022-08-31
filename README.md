@@ -34,6 +34,7 @@ pubspec.yaml
 * DELETE
 * Properties
 * Advanced
+* Exception Handler
 * Learning
 * Manager
 * Configuration
