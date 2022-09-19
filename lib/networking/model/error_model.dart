@@ -5,7 +5,7 @@ class ErrorModel<T> {
   String? description;
   int? statusCode;
   String? raw;
-  NetworkErrorTypes? type;
+  NetworkErrorType? type;
   GenericRequestObject? request;
 
   ErrorModel();

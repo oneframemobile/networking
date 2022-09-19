@@ -6,7 +6,7 @@ class NetworkConfig {
   List<int> _successStatusCode = [];
 
   late String _baseUrl;
-  String? _parseKey;
+  Set<String> _parseKeys = new Set();
 
   NetworkConfig addHeaders(Iterable<Header> iterable) {
     _headers.addAll(iterable);
@@ -41,8 +41,9 @@ class NetworkConfig {
     return this;
   }
 
-  NetworkConfig setParseKey(String parseKey) {
-    _parseKey = parseKey;
+  NetworkConfig setParseKey(List<String> parseKeys) {
+    _parseKeys = new Set();
+    _parseKeys.addAll(parseKeys);
     return this;
   }
 
@@ -58,8 +59,8 @@ class NetworkConfig {
     return _baseUrl;
   }
 
-  String? get parseKey {
-    return _parseKey;
+  Set<String> get parseKeys {
+    return _parseKeys;
   }
 
   List<int> get successStatusCode {

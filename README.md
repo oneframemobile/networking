@@ -34,6 +34,7 @@ pubspec.yaml
 * DELETE
 * Properties
 * Advanced
+* Network Exception Types
 * Learning
 * Manager
 * Configuration
@@ -151,7 +152,7 @@ You are able to customize each request with chain methods.
             url: "/accounts/register", type: RegisterResponse(), body: registerRequest, errorType: ErrorResponse(), listener: listener)
         .addHeader(BaseApiHelper.getInstance().tokenHeader)
         .isList(true)
-        .parseKey("result")
+        .parseKeys(["result","applicatonError"])
         .query("userId", "10")
         .path("register")
         .timeout(new Duration(mins : 1))
@@ -161,6 +162,11 @@ You are able to customize each request with chain methods.
 
 Advanced implementation lets you to change behavior. By implementing learning module you can define success and error cases, or you can customize custom error
 codes like 400~500. Manager class will be declared which effects url, header and timeout values in all the other requests.
+
+## Network Exception Types
+NO_CONNECTION_ERROR, TIMEOUT_ERROR, AUTH_FAILURE_ERROR, SERVER_ERROR, NETWORK_ERROR, PARSE_ERROR, CLIENT_ERROR, SOCKET_ERROR were added. When you get error about them, it will trigger error listener.
+```
+```
 
 ### Learning
 
