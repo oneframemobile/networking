@@ -14,8 +14,6 @@ dependencies:
   async: 2.9.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   mockito: ^5.2.0
   semaphore: ^0.2.0
 
