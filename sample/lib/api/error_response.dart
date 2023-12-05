@@ -1,5 +1,5 @@
 import 'package:networking/networking.dart';
-import 'package:sample/api/error.dart';
+// import 'package:sample/api/error.dart';
 
 class ErrorResponse implements SerializableObject<ErrorResponse> {
   bool isSuccessful;
@@ -15,7 +15,7 @@ class ErrorResponse implements SerializableObject<ErrorResponse> {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['isSuccessful'] = this.isSuccessful;
-    data['error'] = this.error.toJson();
+    // data['error'] = this.error.toJson();
 
     return data;
   }
@@ -23,7 +23,7 @@ class ErrorResponse implements SerializableObject<ErrorResponse> {
   @override
   ErrorResponse fromJson(Map<String, dynamic> json) {
     return ErrorResponse(
-        error: Error.fromJson(json['error']),
+        error: Error(), //Error.fromJson(json['error']),
         isSuccessful: json["isSuccessful"]);
   }
 }
