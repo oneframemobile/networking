@@ -4,6 +4,7 @@ class NetworkConfig {
   Set<Header> _headers = new Set();
   Duration _timeout = new Duration(seconds: 60);
   List<int> _successStatusCode = [];
+  bool _isEnableLog = false;
 
   late String _baseUrl;
   Set<String> _parseKeys = new Set();
@@ -36,6 +37,11 @@ class NetworkConfig {
     return this;
   }
 
+  NetworkConfig setEnableLog(bool isEnableLog) {
+    _isEnableLog = isEnableLog;
+    return this;
+  }
+
   NetworkConfig setBaseUrl(String baseUrl) {
     _baseUrl = baseUrl;
     return this;
@@ -49,6 +55,10 @@ class NetworkConfig {
 
   Duration get timeout {
     return _timeout;
+  }
+
+  bool get isEnableLog {
+    return _isEnableLog;
   }
 
   Set<Header> get headers {
