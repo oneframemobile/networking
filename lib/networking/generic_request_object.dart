@@ -443,9 +443,10 @@ class GenericRequestObject<RequestType extends Serializable,
 
         error.request = this;
 
-        if (_learning != null)
+        if (_learning != null) {
+          writeResponseLogData(response, request, null, error);
           return _learning!.checkCustomError(_listener!, error);
-        else
+        } else
           return error;
       }
     } on SocketException catch (exception) {
