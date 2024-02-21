@@ -13,7 +13,6 @@ import 'package:networking/networking/network_cancellation.dart';
 import 'header.dart';
 import 'model/error_model.dart';
 import 'model/result_model.dart';
-import 'network_cancellation.dart';
 import 'network_config.dart';
 import 'network_learning.dart';
 import 'network_listener.dart';
@@ -65,7 +64,6 @@ class GenericRequestObject<RequestType extends Serializable,
     if (_config != null && _config!.headers.length > 0) {
       _headers?.addAll(_config!.headers);
     }
-
     NetworkCancellation.getInstance().add(this);
   }
 
@@ -300,6 +298,7 @@ class GenericRequestObject<RequestType extends Serializable,
           type: _type,
         );
       }
+      writeRequestLog(request, _body);
 
       var response = await request.close().timeout(
         (_config != null
@@ -327,6 +326,7 @@ class GenericRequestObject<RequestType extends Serializable,
           model.result = utf8.decode(bytes);
           if (_isParse != null && _isParse!) {
             await request.done;
+            writeResponseLogData(response, request, model.result, null);
             return _learning?.checkSuccess<ResponseType>(_listener!, model);
           }
 
@@ -346,7 +346,11 @@ class GenericRequestObject<RequestType extends Serializable,
                 for (var i = 0; i < _parseKeys!.length; i++) {
                   var parseKey = _parseKeys!.elementAt(i);
                   if (body[parseKey] != null) {
-                    model.data = serializable.fromJson(body[parseKey]);
+                    if (body[parseKey] is Map) {
+                      model.data = serializable.fromJson(body[parseKey]);
+                    } else {
+                      model.data = body[parseKey];
+                    }
                     break;
                   }
                 }
@@ -375,7 +379,12 @@ class GenericRequestObject<RequestType extends Serializable,
               model.jsonList = iterable;
             }
           }
+          writeResponseLogData(response, request, model.result, null);
         } on TypeError catch (exception) {
+          ErrorModel errorModel = ErrorModel();
+          errorModel.description = exception.toString();
+          errorModel.statusCode = response.statusCode;
+          writeResponseLogData(response, request, null, errorModel);
           return customErrorHandler(
               Exception(exception.toString()), NetworkErrorType.PARSE_ERROR,
               request: request);
@@ -384,6 +393,10 @@ class GenericRequestObject<RequestType extends Serializable,
           model.bodyBytes = new Uint8List.fromList(s.codeUnits);
           model.result = "";
           print(e);
+          ErrorModel errorModel = ErrorModel();
+          errorModel.description = e.toString();
+          errorModel.statusCode = response.statusCode;
+          writeResponseLogData(response, request, null, errorModel);
         }
 
         await request.done;
@@ -430,9 +443,10 @@ class GenericRequestObject<RequestType extends Serializable,
 
         error.request = this;
 
-        if (_learning != null)
+        if (_learning != null) {
+          writeResponseLogData(response, request, null, error);
           return _learning!.checkCustomError(_listener!, error);
-        else
+        } else
           return error;
       }
     } on SocketException catch (exception) {
@@ -454,6 +468,51 @@ class GenericRequestObject<RequestType extends Serializable,
     } catch (exception) {
       return customErrorHandler(exception, NetworkErrorType.TIMEOUT_ERROR);
     }
+  }
+
+  void writeRequestLog(HttpClientRequest request, dynamic body) {
+    if (_config?.isEnableLog ?? false) {
+      print('============================================REQUEST START===========================================');
+      logLongJsonResponse('URL \n ${request.uri}');
+      logLongJsonResponse('METHOD \n ${request.method}');
+      logLongJsonResponse('HEADERS \n ${request.headers}');
+      logLongJsonResponse('BODY \n ${jsonEncode(body)}');
+      print('============================================REQUEST END============================================');
+    }
+  }
+
+  void writeResponseLogData(HttpClientResponse response, HttpClientRequest request, dynamic body, ErrorModel? error) {
+    if (_config?.isEnableLog ?? false) {
+      final statusCodeSTR = response.statusCode.toString();
+      final methodSTR = request.method; // HTTP method bilgisini alır
+      final urlSTR = request.uri.toString(); // Request URL'sini alır
+      final headersSTR = response.headers.toString();
+
+      print('===========================================RESPONSE START===========================================');
+      logLongJsonResponse('Method \t URL \n $methodSTR $urlSTR');
+      logLongJsonResponse('Status Code \n $statusCodeSTR');
+      logLongJsonResponse('NETWORKING ERROR \n ${error?.description ?? ""}');
+      logLongJsonResponse('HEADERS \n $headersSTR');
+      logLongJsonResponse('BODY \n $body');
+      print('============================================RESPONSE END============================================');
+    }
+  }
+
+  void logLongJsonResponse(String jsonStr) {
+    final maxLength = 100; // Bir satırdaki maksimum karakter sayısı
+    final lines = jsonStr.split('\n');
+    final horizontalLine = ''.padRight(maxLength + 4, '-');
+
+    print(horizontalLine);
+    print('| ${' '.padRight(maxLength)} |');
+    lines.forEach((line) {
+      for (var i = 0; i < line.length; i += maxLength) {
+        final substring = line.substring(i, i + maxLength < line.length ? i + maxLength : line.length);
+        print('| ${substring.padRight(maxLength)} |');
+      }
+    });
+    print('| ${' '.padRight(maxLength)} |');
+    print(horizontalLine);
   }
 
   Future<dynamic> fetch() {
