@@ -11,7 +11,7 @@ dependencies:
   build_runner: ^2.2.1
   flutter_cache_manager: ^3.3.0
   json_serializable: ^6.3.2
-  async: 2.9.0
+  async: 2.11.0
 
 dev_dependencies:
   mockito: ^5.2.0
