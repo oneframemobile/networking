@@ -13,7 +13,7 @@ pubspec.yaml
   networking:
     git:
       url: https://github.com/oneframemobile/networking.git
-      ref: 1.0.1
+      ref: 3.0.0
 ```
 
 ### Requirement
@@ -43,6 +43,7 @@ pubspec.yaml
 * Success Codes
 * Headers
 * SSL Pinning
+* Log Enable
 
 ## Introduction
 
@@ -51,7 +52,7 @@ in your code.
 
 ## Parse
 
-Each request or response body must implement SerializationObject<T> or SerializationList<T>. So that it can be mappable from JSON to Model or vice versa.
+Each request or response body can implement SerializationObject<T> or SerializationList<T>. So that it can be mappable from JSON to Model or vice versa. Or only can be single data exp. bool, string, double.
 
 ```
 class MyResponse implements SerializableObject<MyResponse> {
@@ -329,3 +330,14 @@ HttpClient _client = new HttpClient(context: _context);
 NetworkManager manager = NetworkingFactory.create(client: _client);
 ```
 
+### Log Enable
+```
+if release, profile mode -> hide logs
+else
+  config.setEnableLog(true); // true show log-> false hide log
+```
+```
+NetworkConfig _config = new NetworkConfig();
+config.setEnableLog(true); // true show log-> false hide log
+NetworkManager manager = NetworkingFactory.create(config: _config);
+```

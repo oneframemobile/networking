@@ -472,29 +472,33 @@ class GenericRequestObject<RequestType extends Serializable,
 
   void writeRequestLog(HttpClientRequest request, dynamic body) {
     if (_config?.isEnableLog ?? false) {
-      print('============================================REQUEST START===========================================');
-      logLongJsonResponse('URL \n ${request.uri}');
-      logLongJsonResponse('METHOD \n ${request.method}');
-      logLongJsonResponse('HEADERS \n ${request.headers}');
-      logLongJsonResponse('BODY \n ${jsonEncode(body)}');
-      print('============================================REQUEST END============================================');
+      if (kDebugMode) {
+        print('============================================REQUEST START===========================================');
+        logLongJsonResponse('URL \n ${request.uri}');
+        logLongJsonResponse('METHOD \n ${request.method}');
+        logLongJsonResponse('HEADERS \n ${request.headers}');
+        logLongJsonResponse('BODY \n ${jsonEncode(body)}');
+        print('============================================REQUEST END============================================');
+      }
     }
   }
 
   void writeResponseLogData(HttpClientResponse response, HttpClientRequest request, dynamic body, ErrorModel? error) {
     if (_config?.isEnableLog ?? false) {
-      final statusCodeSTR = response.statusCode.toString();
-      final methodSTR = request.method; // HTTP method bilgisini alır
-      final urlSTR = request.uri.toString(); // Request URL'sini alır
-      final headersSTR = response.headers.toString();
+      if (kDebugMode) {
+        final statusCodeSTR = response.statusCode.toString();
+        final methodSTR = request.method; // HTTP method bilgisini alır
+        final urlSTR = request.uri.toString(); // Request URL'sini alır
+        final headersSTR = response.headers.toString();
 
-      print('===========================================RESPONSE START===========================================');
-      logLongJsonResponse('Method \t URL \n $methodSTR $urlSTR');
-      logLongJsonResponse('Status Code \n $statusCodeSTR');
-      logLongJsonResponse('NETWORKING ERROR \n ${error?.description ?? ""}');
-      logLongJsonResponse('HEADERS \n $headersSTR');
-      logLongJsonResponse('BODY \n $body');
-      print('============================================RESPONSE END============================================');
+        print('===========================================RESPONSE START===========================================');
+        logLongJsonResponse('Method \t URL \n $methodSTR $urlSTR');
+        logLongJsonResponse('Status Code \n $statusCodeSTR');
+        logLongJsonResponse('NETWORKING ERROR \n ${error?.description ?? ""}');
+        logLongJsonResponse('HEADERS \n $headersSTR');
+        logLongJsonResponse('BODY \n $body');
+        print('============================================RESPONSE END============================================');
+      }
     }
   }
 
