@@ -30,7 +30,7 @@ class NetworkManager {
     bool isList = false,
     String? tag,
   }) {
-    return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(MethodType.GET, learning, config!)
+  return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(MethodType.GET, learning, config!, null, client)
         .url(url)
         .type(type)
         .errorType(errorType)
@@ -56,7 +56,7 @@ class NetworkManager {
     bool isList = false,
     String? tag,
   }) {
-    return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.POST, learning, config!, body)
+  return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.POST, learning, config!, body, client)
         .url(url)
         .type(type)
         .errorType(errorType)
@@ -82,7 +82,7 @@ class NetworkManager {
     bool isList = false,
     String? tag,
   }) {
-    return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.PUT, learning, config!, body)
+  return GenericRequestObject<RequestType, ResponseType, ErrorType>(MethodType.PUT, learning, config!, body, client)
         .url(url)
         .type(type)
         .errorType(errorType)
@@ -106,7 +106,7 @@ class NetworkManager {
     bool isParse = false,
     String? tag,
   }) {
-    return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(MethodType.DELETE, learning, config!)
+  return GenericRequestObject<Serializable<dynamic>, ResponseType, ErrorType>(MethodType.DELETE, learning, config!, null, client)
         .url(url)
         .type(type)
         .errorType(errorType)

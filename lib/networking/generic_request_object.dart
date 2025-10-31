@@ -24,6 +24,7 @@ import 'serializable_object.dart';
 
 class GenericRequestObject<RequestType extends Serializable,
     ResponseType extends Serializable, ErrorType extends Serializable> {
+  HttpClient? _client;
   Set<Header>? _headers;
   ContentType? _contentType;
   MethodType? _methodType;
@@ -52,6 +53,7 @@ class GenericRequestObject<RequestType extends Serializable,
     this._learning,
     this._config, [
     this._body,
+    this._client,
   ]) {
     _headers = new Set();
     _cookies = new Set();
@@ -219,7 +221,7 @@ class GenericRequestObject<RequestType extends Serializable,
   }
 
   Future<HttpClientRequest> _request() async {
-    final client = HttpClient();
+    final client = _client ?? HttpClient();
     client.connectionTimeout =
         _config == null ? Duration(minutes: 1) : _config!.timeout;
     if (_uri != null) {
